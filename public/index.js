@@ -1,4 +1,3 @@
-import './styles.js'
 import './components/dice-button.js'
 import './components/dice-die.js'
 import './components/dice-input.js'

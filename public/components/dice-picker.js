@@ -1,8 +1,11 @@
 import { fromEvent } from 'rxjs'
 import { distinctUntilChanged, map, scan, tap } from 'rxjs/operators'
 import { decodeFormula, encodeFormula } from '../util/dice.js'
-import { define, html, renderComponent } from '../util/dom.js'
+import { adoptStyles, define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject, fromMethod, fromProperty, next, useSubscribe } from '../util/rx.js'
+import styles from './dice-picker.css'
+
+adoptStyles(styles)
 
 define('dice-picker', (el) => {
   const [ subscribe, unsubscribe ] = useSubscribe()

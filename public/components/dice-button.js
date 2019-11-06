@@ -1,5 +1,8 @@
-import { define, html, renderComponent } from '../util/dom.js'
+import { adoptStyles, define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject, fromProperty, useSubscribe } from '../util/rx.js'
+import styles from './dice-button.css'
+
+adoptStyles(styles)
 
 define('dice-button', 'button', (el) => {
   const [ subscribe, unsubscribe ] = useSubscribe()
