@@ -1,0 +1,7 @@
+{
+  "short_name": "dRoller",
+  "name": "Dice Roller",
+  "start_url": "/",
+  "background_color": "#303030",
+  "display": "standalone"
+}
