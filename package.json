@@ -4,9 +4,10 @@
   "description": "Dice rolling web app",
   "main": "index.js",
   "scripts": {
-    "build": "pika-web --clean --optimize --no-source-map",
+    "build": "pika-web --clean --optimize --no-source-map --dest ./public/web_modules/",
+    "postbuild": "cp ./node_modules/es-module-shims/dist/es-module-shims.min.js ./public/web_modules/es-module-shims.min.js",
     "postinstall": "npm run build",
-    "start": "es-dev-server --open ./ --watch ./src"
+    "start": "es-dev-server --open --watch --root-dir ./public/"
   },
   "repository": {
     "type": "git",
@@ -27,7 +28,8 @@
   },
   "devDependencies": {
     "@pika/web": "0.6.1",
-    "es-dev-server": "1.23.1"
+    "es-dev-server": "1.23.1",
+    "now": "16.4.4"
   },
   "@pika/web": {
     "webDependencies": [

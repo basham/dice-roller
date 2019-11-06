@@ -21,7 +21,7 @@ define('dice-button', 'button', (el) => {
 function render (props) {
   const { faces, label } = props
   const type = `d${faces}`
-  const icon = `./src/dice.svg#${type}`
+  const icon = `./dice.svg#${type}`
   return html`
     <svg class='icon'>
       <use xlink:href=${icon} />
