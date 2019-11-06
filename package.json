@@ -4,8 +4,8 @@
   "description": "Dice rolling web app",
   "main": "index.js",
   "scripts": {
-    "dep": "pika-web --clean --optimize --no-source-map",
-    "postinstall": "npm run dep",
+    "build": "pika-web --clean --optimize --no-source-map",
+    "postinstall": "npm run build",
     "start": "es-dev-server --open ./ --watch ./src"
   },
   "repository": {
