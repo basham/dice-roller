@@ -1,0 +1,44 @@
+dice-toolbar .hidden {
+  visibility: hidden;
+}
+
+dice-toolbar .total {
+  color: var(--color-black-01);
+  text-align: center;
+}
+
+dice-toolbar .total__count {
+  display: block;
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+dice-toolbar .total__label {
+  display: block;
+  font-size: calc(20rem/16);
+  letter-spacing: 0.1em;
+}
+
+dice-toolbar .button {
+  background-color: var(--color-black-07);
+  border: calc(4rem/16) solid var(--color-black-05);
+  border-radius: 0.25rem;
+  color: var(--color-black-01);
+  font-size: calc(18rem/16);
+  font-weight: bold;
+  line-height: calc(40rem/16);
+  margin-top: 2rem;
+  padding: 0 1rem;
+  white-space: nowrap;
+  width: 100%;
+}
+
+dice-toolbar .button:focus,
+dice-toolbar .button:hover {
+  border-color: var(--color-black-01);
+  outline: none;
+}
+
+dice-toolbar .button:active {
+  background-color: var(--color-black-08);
+}

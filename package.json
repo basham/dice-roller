@@ -1,0 +1,41 @@
+{
+  "name": "dice-roller",
+  "version": "1.0.0",
+  "description": "Dice rolling web app",
+  "main": "index.js",
+  "scripts": {
+    "dep": "pika-web --clean --optimize --no-source-map",
+    "postinstall": "npm run dep",
+    "start": "es-dev-server --open ./ --watch ./src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/basham/dice-roller.git"
+  },
+  "author": "Chris Basham <chris@bash.am>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/basham/dice-roller/issues"
+  },
+  "homepage": "https://github.com/basham/dice-roller#readme",
+  "dependencies": {
+    "construct-style-sheets-polyfill": "2.3.0",
+    "es-module-shims": "0.4.6",
+    "lighterhtml": "1.4.1",
+    "rxjs": "6.5.3",
+    "when-elements": "0.2.1"
+  },
+  "devDependencies": {
+    "@pika/web": "0.6.1",
+    "es-dev-server": "1.23.1"
+  },
+  "@pika/web": {
+    "webDependencies": [
+      "construct-style-sheets-polyfill",
+      "lighterhtml",
+      "rxjs",
+      "rxjs/operators",
+      "when-elements"
+    ]
+  }
+}
