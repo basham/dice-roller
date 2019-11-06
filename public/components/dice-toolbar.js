@@ -24,7 +24,7 @@ define('dice-toolbar', (el) => {
 function render (props) {
   const { count, total } = props
   return html`
-    <div class=${count ? '' : 'hidden'}>
+    <div class=${count ? 'container' : 'container container--hidden'}>
       <div class='total'>
         <span class='total__count'>
           ${total}
@@ -33,16 +33,18 @@ function render (props) {
           Total
         </span>
       </div>
-      <button
-        class='button'
-        data-roll>
-        Roll
-      </button>
-      <button
-        class='button'
-        data-reset>
-        Remove all
-      </button>
+      <div class='buttons'>
+        <button
+          class='button'
+          data-roll>
+          Roll
+        </button>
+        <button
+          class='button'
+          data-reset>
+          Remove all
+        </button>
+      </div>
     </div>
   `
 }

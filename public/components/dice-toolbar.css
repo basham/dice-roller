@@ -1,4 +1,10 @@
-dice-toolbar .hidden {
+dice-toolbar .container {
+  background-color: var(--color-black-09);
+  border-radius: 0.5rem;
+  padding: 2rem;
+}
+
+dice-toolbar .container--hidden {
   visibility: hidden;
 }
 
@@ -19,18 +25,24 @@ dice-toolbar .total__label {
   letter-spacing: 0.1em;
 }
 
+dice-toolbar .buttons {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 1rem -1rem -1rem;
+}
+
 dice-toolbar .button {
   background-color: var(--color-black-07);
   border: calc(4rem/16) solid var(--color-black-05);
   border-radius: 0.25rem;
   color: var(--color-black-01);
+  flex-grow: 1;
   font-size: calc(18rem/16);
   font-weight: bold;
   line-height: calc(40rem/16);
-  margin-top: 2rem;
   padding: 0 1rem;
+  margin: 1rem;
   white-space: nowrap;
-  width: 100%;
 }
 
 dice-toolbar .button:focus,

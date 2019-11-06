@@ -98,7 +98,7 @@ Color variations: https://codepen.io/basham/pen/OpNybO
 }
 
 html {
-  background-color: var(--color-black-09);
+  background-color: var(--color-black-08);
   color: var(--color-black-01);
 }
 
@@ -111,7 +111,7 @@ body {
 }
 
 dice-root {
-  display: grid;
+  display: block;
   grid-template-columns: min-content 1fr;
   grid-template-rows: auto 1fr;
   grid-template-areas:
@@ -121,19 +121,27 @@ dice-root {
   min-width: 100vw;
 }
 
+@media (min-width: 40rem) {
+
+  dice-root {
+    display: grid;
+  }
+}
+
 dice-root > dice-picker {
-  background-color: var(--color-black-08);
+  display: block;
   grid-area: picker;
   padding: 1.5rem;
 }
 
 dice-root > dice-toolbar {
+  display: block;
   grid-area: toolbar;
-  padding: 2rem;
+  padding: 0 2rem;
 }
 
 dice-root > dice-tray {
-  background-color: var(--color-black-08);
+  display: block;
   grid-area: board;
   padding: 1.5rem;
 }
