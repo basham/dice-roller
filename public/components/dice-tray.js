@@ -88,15 +88,17 @@ define('dice-tray', (el) => {
 
 function render (props) {
   const { diceSets } = props
-  return html`${diceSets.map(renderDiceSet)}`
+  return html`
+    <div class='dice-set'>
+      ${diceSets.map(renderDiceSet)}
+    </div>
+  `
 }
 
 function renderDiceSet (props) {
   const { dice, key } = props
   return html.for(key)`
-    <div class='dice-set'>
-      ${dice.map(renderDie)}
-    </div>
+    ${dice.map(renderDie)}
   `
 }
 

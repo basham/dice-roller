@@ -35,7 +35,7 @@ function render (props) {
       </div>
       <div class='buttons'>
         <button
-          class='button'
+          class='button button--primary'
           data-roll>
           Roll
         </button>

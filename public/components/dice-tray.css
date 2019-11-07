@@ -1,3 +1,9 @@
+dice-tray > .dice-set {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
 dice-tray > .dice-set > dice-die {
   margin: 0.5rem;
 }

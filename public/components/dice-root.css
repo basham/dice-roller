@@ -115,7 +115,7 @@ dice-root {
   grid-template-columns: min-content 1fr;
   grid-template-rows: auto 1fr;
   grid-template-areas:
-    ". picker"
+    "toolbar picker"
     "toolbar board";
   min-height: 100vh;
   min-width: 100vw;
@@ -129,9 +129,7 @@ dice-root {
 }
 
 dice-root > dice-picker {
-  display: block;
   grid-area: picker;
-  padding: 1.5rem;
 }
 
 dice-root > dice-toolbar {
