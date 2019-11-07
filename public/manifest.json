@@ -1,7 +1,25 @@
 {
-  "short_name": "dRoller",
   "name": "Dice Roller",
-  "start_url": "/",
+  "short_name": "Dice Roller",
+  "description": "Roll d4, d6, d8, d10, d12, and d20 dice.",
+  "lang": "en-US",
+  "start_url": "/index.html",
+  "display": "standalone",
   "background_color": "#303030",
-  "display": "standalone"
+  "theme_color": "#cc6ad9",
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "./icons/icon-528.png",
+      "type": "image/png",
+      "sizes": "528x528"
+    },
+    {
+      "src": "./icons/icon.svg"
+    }
+  ]
 }
