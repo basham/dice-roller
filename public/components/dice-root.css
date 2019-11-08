@@ -110,6 +110,10 @@ body {
   padding: 0;
 }
 
+button {
+  user-select: none;
+}
+
 dice-root {
   display: block;
   grid-template-columns: min-content 1fr;
