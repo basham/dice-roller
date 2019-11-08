@@ -1,61 +1,15 @@
-import { distinctUntilChanged, map, shareReplay, startWith, tap } from 'rxjs/operators'
-import { adoptStyles, define, html, renderComponent } from '../util/dom.js'
-import { combineLatestObject, fromEventSelector, useSubscribe } from '../util/rx.js'
+import { adoptStyles, define, html, render } from '../util/dom.js'
 import styles from './dice-root.css'
 
 adoptStyles(styles)
 
 define('dice-root', (el) => {
-  const [ subscribe, unsubscribe ] = useSubscribe()
-
-  const formula$ = fromEventSelector(el, 'dice-picker', 'formula-changed').pipe(
-    map(({ detail }) => detail),
-    startWith('')
-  )
-
-  const rollBoard$ = fromEventSelector(el, 'dice-tray', 'tray-changed').pipe(
-    map(({ detail }) => detail),
-    shareReplay(1)
-  )
-  const count$ = rollBoard$.pipe(
-    map(({ count }) => count),
-    startWith(0),
-    distinctUntilChanged()
-  )
-  const total$ = rollBoard$.pipe(
-    map(({ total }) => total),
-    startWith(0),
-    distinctUntilChanged()
-  )
-
-  const rollAll$ = fromEventSelector(el, 'dice-tray button[data-roll]', 'click').pipe(
-    tap(() => el.querySelector('dice-tray').roll())
-  )
-  subscribe(rollAll$)
-
-  const removeAll$ = fromEventSelector(el, 'dice-tray button[data-reset]', 'click').pipe(
-    tap(() => el.querySelector('dice-picker').reset())
-  )
-  subscribe(removeAll$)
-
-  const render$ = combineLatestObject({
-    count: count$,
-    formula: formula$,
-    total: total$
-  }).pipe(
-    renderComponent(el, render)
-  )
-  subscribe(render$)
-
-  return unsubscribe
+  render(el, renderRoot)
 })
 
-function render (props) {
-  const { count, formula, total } = props
+function renderRoot () {
   return html`
     <dice-picker />
-    <dice-tray
-      formula=${formula}
-      total=${total} />
+    <dice-tray/>
   `
 }

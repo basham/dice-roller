@@ -2,7 +2,7 @@ import { BehaviorSubject, Subject, fromEvent, merge } from 'rxjs'
 import { distinctUntilChanged, filter, map, shareReplay, tap, withLatestFrom } from 'rxjs/operators'
 import { range } from '../util/array.js'
 import { adoptStyles, define, html, keychain, renderComponent, uuid } from '../util/dom.js'
-import { animationFrame, combineLatestObject, debug, fromEventSelector, fromMethod, fromProperty, next, useSubscribe } from '../util/rx.js'
+import { animationFrame, combineLatestObject, debug, fromEventSelector, next, useSubscribe } from '../util/rx.js'
 import styles from './dice-tray.css'
 
 adoptStyles(styles)
@@ -12,9 +12,16 @@ define('dice-tray', (el) => {
 
   const getKey = keychain()
 
-  const diceSet$ = new BehaviorSubject([])
+  const componentDidUpdate$ = new Subject()
 
-  const total$ = fromProperty(el, 'total', { defaultValue: 0, type: Number })
+  const diceSet$ = new BehaviorSubject([])
+  const total$ = new BehaviorSubject(0)
+
+  const count$ = diceSet$.pipe(
+    map((diceSet) => diceSet.length),
+    distinctUntilChanged(),
+    shareReplay(1)
+  )
 
   const diceChanged$ = fromEvent(document, 'dice-input-changed').pipe(
     map(({ detail }) => detail),
@@ -58,14 +65,6 @@ define('dice-tray', (el) => {
   )
   subscribe(updateDiceSet$)
 
-  const count$ = diceSet$.pipe(
-    map((diceSet) => diceSet.length),
-    distinctUntilChanged(),
-    shareReplay(1)
-  )
-
-  const componentDidUpdate$ = new Subject()
-
   const results$ = merge(
     fromEventSelector(el, 'dice-die', 'value-changed'),
     componentDidUpdate$
@@ -87,6 +86,7 @@ define('dice-tray', (el) => {
         }, {})
       return { count, results, total }
     }),
+    next(total$, ({ total }) => total),
     tap((value) => {
       const { count, results, total } = value
       el.count = count
@@ -101,13 +101,18 @@ define('dice-tray', (el) => {
   )
   subscribe(results$)
 
-  const roll$ = fromMethod(el, 'roll').pipe(
+  const roll$ = fromEventSelector(el, 'button[data-roll]', 'click').pipe(
     tap(() => {
       el.querySelectorAll('dice-die')
         .forEach((die) => die.roll())
     })
   )
   subscribe(roll$)
+
+  const reset$ = fromEventSelector(el, 'button[data-reset]', 'click').pipe(
+    tap(() => document.querySelector('dice-picker').reset())
+  )
+  subscribe(reset$)
 
   const render$ = combineLatestObject({
     count: count$,
