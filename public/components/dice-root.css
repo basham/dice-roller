@@ -141,7 +141,7 @@ dice-root > dice-toolbar {
 dice-root > dice-tray {
   display: block;
   grid-area: board;
-  padding: 2rem;
+  padding: 0 2rem 2rem;
 }
 
 .button {
@@ -179,4 +179,8 @@ dice-root > dice-tray {
 
 .button--primary:active {
   background-color: var(--color-black-03);
+}
+
+.button--wide {
+  width: 100%;
 }

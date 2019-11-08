@@ -2,7 +2,7 @@ import { BehaviorSubject, Subject, fromEvent, merge } from 'rxjs'
 import { distinctUntilChanged, filter, map, shareReplay, tap, withLatestFrom } from 'rxjs/operators'
 import { range } from '../util/array.js'
 import { adoptStyles, define, html, keychain, renderComponent, uuid } from '../util/dom.js'
-import { animationFrame, combineLatestObject, debug, fromEventSelector, fromMethod, next, useSubscribe } from '../util/rx.js'
+import { animationFrame, combineLatestObject, debug, fromEventSelector, fromMethod, fromProperty, next, useSubscribe } from '../util/rx.js'
 import styles from './dice-tray.css'
 
 adoptStyles(styles)
@@ -13,6 +13,8 @@ define('dice-tray', (el) => {
   const getKey = keychain()
 
   const diceSet$ = new BehaviorSubject([])
+
+  const total$ = fromProperty(el, 'total', { defaultValue: 0, type: Number })
 
   const diceChanged$ = fromEvent(document, 'dice-input-changed').pipe(
     map(({ detail }) => detail),
@@ -109,7 +111,8 @@ define('dice-tray', (el) => {
 
   const render$ = combineLatestObject({
     count: count$,
-    diceSet: diceSet$
+    diceSet: diceSet$,
+    total: total$
   }).pipe(
     animationFrame(),
     renderComponent(el, render),
@@ -121,12 +124,41 @@ define('dice-tray', (el) => {
 })
 
 function render (props) {
-  const { diceSet } = props
+  const { count, diceSet } = props
+  if (count < 1) {
+    return html``
+  }
   return html`
-    <div class='dice-set'>
+    <div class='section section--card'>
+      <button
+        class='button button--primary button--wide'
+        data-roll>
+        Roll
+      </button>
+      ${renderTotal(props)}
+    </div>
+    <div class='section dice-set'>
       ${diceSet.map(renderDie)}
     </div>
-    ${renderButtons(props)}
+    ${renderLockedDice(props)}
+    ${renderFooter(props)}
+  `
+}
+
+function renderTotal (props) {
+  const { count, total } = props
+  if (count < 2) {
+    return null
+  }
+  return html`
+    <div class='total'>
+      <span class='total__count'>
+        ${total}
+      </span>
+      <span class='total__label'>
+        Total
+      </span>
+    </div>
   `
 }
 
@@ -137,13 +169,25 @@ function renderDie (props) {
   `
 }
 
-function renderButtons (props) {
+function renderLockedDice (props) {
   const { count } = props
-  if (!count) {
+  if (count < 2) {
     return null
   }
   return html`
-    <div class='buttons'>
+    <div class='section section--divider locked'>
+      <p>Tap dice to lock their value</p>
+    </div>
+  `
+}
+
+function renderFooter (props) {
+  const { count } = props
+  if (count < 2) {
+    return null
+  }
+  return html`
+    <div class='section section--divider'>
       <button
         class='button'
         data-reset>

@@ -28,7 +28,7 @@ define('dice-root', (el) => {
     distinctUntilChanged()
   )
 
-  const rollAll$ = fromEventSelector(el, 'dice-toolbar button[data-roll]', 'click').pipe(
+  const rollAll$ = fromEventSelector(el, 'dice-tray button[data-roll]', 'click').pipe(
     tap(() => el.querySelector('dice-tray').roll())
   )
   subscribe(rollAll$)
@@ -54,9 +54,8 @@ function render (props) {
   const { count, formula, total } = props
   return html`
     <dice-picker />
-    <dice-toolbar
-      count=${count}
+    <dice-tray
+      formula=${formula}
       total=${total} />
-    <dice-tray formula=${formula} />
   `
 }
