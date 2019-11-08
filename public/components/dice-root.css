@@ -112,6 +112,7 @@ body {
 
 button {
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 dice-root {
