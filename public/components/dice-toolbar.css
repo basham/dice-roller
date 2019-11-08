@@ -28,43 +28,5 @@ dice-toolbar .total__label {
 dice-toolbar .buttons {
   display: flex;
   flex-direction: column;
-  margin-top: 1rem;
-}
-
-dice-toolbar .button {
-  background-color: var(--color-black-09);
-  border: calc(4rem/16) solid var(--color-black-05);
-  border-radius: 0.25rem;
-  color: var(--color-black-01);
-  font-size: calc(18rem/16);
-  font-weight: bold;
-  line-height: calc(40rem/16);
-  margin-top: 1rem;
-  padding: 0 1rem;
-  white-space: nowrap;
-}
-
-dice-toolbar .button:focus,
-dice-toolbar .button:hover {
-  border-color: var(--color-black-02);
-  outline: none;
-}
-
-dice-toolbar .button:active {
-  background-color: var(--color-black-10);
-}
-
-dice-toolbar .button--primary {
-  background-color: var(--color-black-02);
-  border-color: var(--color-black-02);
-  color: var(--color-black-09);
-}
-
-dice-toolbar .button--primary:focus,
-dice-toolbar .button--primary:hover {
-  border-color: var(--color-black-00);
-}
-
-dice-toolbar .button--primary:active {
-  background-color: var(--color-black-03);
+  margin-top: 2rem;
 }

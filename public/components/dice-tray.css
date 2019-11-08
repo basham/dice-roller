@@ -1,9 +1,13 @@
 dice-tray > .dice-set {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: repeat(auto-fit, 4rem);
   justify-content: center;
 }
 
-dice-tray > .dice-set > dice-die {
-  margin: 0.5rem;
+dice-tray > .buttons {
+  border-top: 0.25rem solid var(--color-black-09);
+  margin-top: 2rem;
+  padding-top: 2rem;
+  text-align: center;
 }

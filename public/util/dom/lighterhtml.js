@@ -26,3 +26,10 @@ export function keychain () {
 export const renderComponent = renderComponentFactory(
   ({ element, props, renderer }) => render(element, () => renderer(props))
 )
+
+let _id = 0
+export function uuid () {
+  const id = _id
+  _id = _id + 1
+  return `${id}`
+}

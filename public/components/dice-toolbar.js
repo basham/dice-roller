@@ -39,11 +39,6 @@ function render (props) {
           data-roll>
           Roll
         </button>
-        <button
-          class='button'
-          data-reset>
-          Remove all
-        </button>
       </div>
     </div>
   `

@@ -33,7 +33,7 @@ define('dice-root', (el) => {
   )
   subscribe(rollAll$)
 
-  const removeAll$ = fromEventSelector(el, 'dice-toolbar button[data-reset]', 'click').pipe(
+  const removeAll$ = fromEventSelector(el, 'dice-tray button[data-reset]', 'click').pipe(
     tap(() => el.querySelector('dice-picker').reset())
   )
   subscribe(removeAll$)

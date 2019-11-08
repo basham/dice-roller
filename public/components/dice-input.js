@@ -1,5 +1,5 @@
 import { combineLatest, merge } from 'rxjs'
-import { map, mapTo, tap, withLatestFrom } from 'rxjs/operators'
+import { filter, map, mapTo, tap, withLatestFrom } from 'rxjs/operators'
 import { adoptStyles, define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject, fromEventSelector, fromMethod, fromProperty, next, useSubscribe } from '../util/rx.js'
 import styles from './dice-input.css'
@@ -32,26 +32,23 @@ define('dice-input', (el) => {
     decrement$,
     reset$
   ).pipe(
-    next(value$)
-  )
-  subscribe(changeValue$)
-
-  const dispatch$ = combineLatest(
-    faces$,
-    value$
-  ).pipe(
-    tap(([ faces, value ]) => {
+    withLatestFrom(value$, faces$),
+    map(([ newValue, oldValue, faces ]) => {
+      const diff = newValue - oldValue
+      const value = newValue
+      return { diff, faces, newValue, oldValue, value }
+    }),
+    filter(({ diff }) => diff !== 0),
+    next(value$, ({ value }) => value),
+    tap((detail) => {
       const event = new CustomEvent('dice-input-changed', {
         bubbles: true,
-        detail: {
-          faces,
-          value
-        }
+        detail
       })
       el.dispatchEvent(event)
     })
   )
-  subscribe(dispatch$)
+  subscribe(changeValue$)
 
   const render$ = combineLatestObject({
     faces: faces$,

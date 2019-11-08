@@ -1,9 +1,8 @@
-import { Subject, merge } from 'rxjs'
-import { map, shareReplay, tap } from 'rxjs/operators'
+import { BehaviorSubject, Subject, fromEvent, merge } from 'rxjs'
+import { distinctUntilChanged, filter, map, shareReplay, tap, withLatestFrom } from 'rxjs/operators'
 import { range } from '../util/array.js'
-import { decodeFormula } from '../util/dice.js'
-import { adoptStyles, define, html, keychain, renderComponent } from '../util/dom.js'
-import { combineLatestObject, fromEventSelector, fromMethod, fromProperty, next, useSubscribe } from '../util/rx.js'
+import { adoptStyles, define, html, keychain, renderComponent, uuid } from '../util/dom.js'
+import { animationFrame, combineLatestObject, debug, fromEventSelector, fromMethod, next, useSubscribe } from '../util/rx.js'
 import styles from './dice-tray.css'
 
 adoptStyles(styles)
@@ -11,22 +10,55 @@ adoptStyles(styles)
 define('dice-tray', (el) => {
   const [ subscribe, unsubscribe ] = useSubscribe()
 
-  const formula$ = fromProperty(el, 'formula', { defaultValue: '', type: String })
   const getKey = keychain()
 
-  const diceSets$ = formula$.pipe(
-    map(decodeFormula),
-    map((diceSet) =>
-      diceSet
-        .filter(({ dieCount }) => dieCount)
-        .map(({ dieCount, faceCount, type }) => {
-          const key = getKey(type)
-          const dice = range(dieCount)
-            .map((i) => getKey(`${type}-${i}`))
-            .map((key) => ({ key, faceCount }))
-          return { dieCount, dice, key }
+  const diceSet$ = new BehaviorSubject([])
+
+  const diceChanged$ = fromEvent(document, 'dice-input-changed').pipe(
+    map(({ detail }) => detail),
+    shareReplay(1)
+  )
+  const addDice$ = diceChanged$.pipe(
+    filter(({ diff }) => diff > 0),
+    map(({ diff, faces }) =>
+      range(diff)
+        .map(() => {
+          const id = uuid()
+          const key = getKey(id)
+          return { id, faces, key }
         })
     ),
+    withLatestFrom(diceSet$),
+    map(([ newDice, diceSet ]) => [ ...diceSet, ...newDice ])
+  )
+  const removeDice$ = diceChanged$.pipe(
+    filter(({ diff }) => diff < 0),
+    withLatestFrom(diceSet$),
+    map(([{ diff, faces }, diceSet ]) => {
+      let n = Math.abs(diff)
+      return diceSet
+        .reverse()
+        .filter((die) => {
+          if (die.faces === faces && n > 0) {
+            n = n - 1
+            return false
+          }
+          return true
+        })
+        .reverse()
+    })
+  )
+  const updateDiceSet$ = merge(
+    addDice$,
+    removeDice$
+  ).pipe(
+    next(diceSet$)
+  )
+  subscribe(updateDiceSet$)
+
+  const count$ = diceSet$.pipe(
+    map((diceSet) => diceSet.length),
+    distinctUntilChanged(),
     shareReplay(1)
   )
 
@@ -76,8 +108,10 @@ define('dice-tray', (el) => {
   subscribe(roll$)
 
   const render$ = combineLatestObject({
-    diceSets: diceSets$
+    count: count$,
+    diceSet: diceSet$
   }).pipe(
+    animationFrame(),
     renderComponent(el, render),
     next(componentDidUpdate$)
   )
@@ -87,24 +121,34 @@ define('dice-tray', (el) => {
 })
 
 function render (props) {
-  const { diceSets } = props
+  const { diceSet } = props
   return html`
     <div class='dice-set'>
-      ${diceSets.map(renderDiceSet)}
+      ${diceSet.map(renderDie)}
     </div>
-  `
-}
-
-function renderDiceSet (props) {
-  const { dice, key } = props
-  return html.for(key)`
-    ${dice.map(renderDie)}
+    ${renderButtons(props)}
   `
 }
 
 function renderDie (props) {
-  const { faceCount, key } = props
+  const { faces, key } = props
   return html.for(key)`
-    <dice-die faces=${faceCount} />
+    <dice-die faces=${faces} />
+  `
+}
+
+function renderButtons (props) {
+  const { count } = props
+  if (!count) {
+    return null
+  }
+  return html`
+    <div class='buttons'>
+      <button
+        class='button'
+        data-reset>
+        Reset
+      </button>
+    </div>
   `
 }
