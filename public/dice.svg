@@ -17,4 +17,8 @@
   <symbol id="d20" viewBox="0 0 32 32">
     <polygon points="16 2 3.88 9 3.88 23 16 30 28.12 23 28.12 9 16 2"/>
   </symbol>
+  <symbol id="lock" viewBox="0 0 32 32">
+    <path d="M23,16V9A7,7,0,0,0,9,9v7" fill="none"/>
+    <rect x="4" y="16" width="24" height="14"/>
+  </symbol>
 </svg>

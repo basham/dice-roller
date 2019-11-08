@@ -17,7 +17,6 @@
   --color-active-text: var(--color-default-text);
 }
 
-
 [is="dice-button"][theme="ghost"] {
   --color-default-fill: transparent;
   --color-default-stroke: var(--color-black-05);
@@ -118,6 +117,23 @@
   stroke-width: 2;
   top: 0;
   width: 100%;
+}
+
+[is="dice-button"] > .lock {
+  display: none;
+  fill: var(--color-black-01);
+  height: 1.5rem;
+  position: absolute;
+  right: 0;
+  stroke: var(--color-black-01);
+  stroke-linejoin: round;
+  stroke-width: 4;
+  top: 0;
+  width: 1.5rem;
+}
+
+[is="dice-button"][aria-pressed="true"] > .lock {
+  display: block;
 }
 
 [is="dice-button"] > .label {
