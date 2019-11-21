@@ -1,4 +1,4 @@
-import { combineLatest, merge } from 'rxjs'
+import { merge } from 'rxjs'
 import { filter, map, mapTo, tap, withLatestFrom } from 'rxjs/operators'
 import { adoptStyles, define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject, fromEventSelector, fromMethod, fromProperty, next, useSubscribe } from '../util/rx.js'
