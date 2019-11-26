@@ -102,6 +102,18 @@ html {
   color: var(--color-black-01);
 }
 
+@media (max-height: 30em) and (orientation: landscape) {
+
+  html {
+    height: 100vw;
+    position: absolute;
+    top: 100%;
+    transform: rotate(-90deg);
+    transform-origin: left top;
+    width: 100vh;
+  }
+}
+
 body {
   font-family: system, sans-serif;
   font-size: 100%;
@@ -117,35 +129,16 @@ button {
 
 dice-root {
   display: block;
-  grid-template-columns: min-content 1fr;
-  grid-template-rows: auto 1fr;
-  grid-template-areas:
-    "toolbar picker"
-    "toolbar board";
-  min-height: 100vh;
-  min-width: 100vw;
-}
-
-@media (min-width: 40rem) {
-
-  dice-root {
-    display: grid;
-  }
+  margin: 0 auto;
+  max-width: 40rem;
 }
 
 dice-root > dice-picker {
-  grid-area: picker;
-}
-
-dice-root > dice-toolbar {
-  display: block;
-  grid-area: toolbar;
-  padding: 0 2rem;
+  margin: 0 auto;
 }
 
 dice-root > dice-tray {
   display: block;
-  grid-area: board;
   padding: 0 2rem 2rem;
 }
 
