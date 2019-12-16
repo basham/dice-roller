@@ -1,7 +1,7 @@
 import { merge } from 'rxjs'
-import { filter, map, mapTo, tap, withLatestFrom } from 'rxjs/operators'
+import { map } from 'rxjs/operators'
 import { adoptStyles, define, html, renderComponent } from '../util/dom.js'
-import { combineLatestObject, fromEventSelector, fromMethod, fromProperty, next, useSubscribe } from '../util/rx.js'
+import { combineLatestObject, fromProperty, useSubscribe } from '../util/rx.js'
 import styles from './dice-input.css'
 
 adoptStyles(styles)
@@ -15,40 +15,6 @@ define('dice-input', (el) => {
   const type$ = faces$.pipe(
     map((faces) => `d${faces}`)
   )
-
-  const increment$ = fromEventSelector(el, '.increment-button', 'click').pipe(
-    withLatestFrom(value$),
-    map(([ , value ]) => value + 1)
-  )
-  const decrement$ = fromEventSelector(el, '.decrement-button', 'click').pipe(
-    withLatestFrom(value$),
-    map(([ , value ]) => value <= 0 ? 0 : value - 1)
-  )
-  const reset$ = fromMethod(el, 'reset').pipe(
-    mapTo(0)
-  )
-  const changeValue$ = merge(
-    increment$,
-    decrement$,
-    reset$
-  ).pipe(
-    withLatestFrom(value$, faces$),
-    map(([ newValue, oldValue, faces ]) => {
-      const diff = newValue - oldValue
-      const value = newValue
-      return { diff, faces, newValue, oldValue, value }
-    }),
-    filter(({ diff }) => diff !== 0),
-    next(value$, ({ value }) => value),
-    tap((detail) => {
-      const event = new CustomEvent('dice-input-changed', {
-        bubbles: true,
-        detail
-      })
-      el.dispatchEvent(event)
-    })
-  )
-  subscribe(changeValue$)
 
   const render$ = combineLatestObject({
     faces: faces$,
@@ -71,6 +37,7 @@ function render (props) {
     <button
       aria-label=${`Add ${type}`}
       class='increment-button'
+      data-increment=${type}
       faces=${faces}
       is='dice-button'
       size='small'
@@ -78,6 +45,7 @@ function render (props) {
     <button
       aria-label=${`Remove ${type}, ${value} total`}
       class='decrement-button'
+      data-decrement=${type}
       disabled=${!value}>
       &times; ${value}
     </button>

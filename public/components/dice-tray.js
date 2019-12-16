@@ -1,8 +1,8 @@
-import { BehaviorSubject, Subject, fromEvent, merge } from 'rxjs'
-import { distinctUntilChanged, filter, map, shareReplay, tap, withLatestFrom } from 'rxjs/operators'
+import { BehaviorSubject, Subject, from, fromEvent, merge } from 'rxjs'
+import { distinctUntilChanged, filter, map, mergeMap, shareReplay, tap, withLatestFrom } from 'rxjs/operators'
 import { range } from '../util/array.js'
 import { adoptStyles, define, html, keychain, renderComponent, uuid } from '../util/dom.js'
-import { animationFrame, combineLatestObject, debug, fromEventSelector, next, useSubscribe } from '../util/rx.js'
+import { animationFrame, combineLatestObject, fromEventSelector, next, useSubscribe } from '../util/rx.js'
 import styles from './dice-tray.css'
 
 adoptStyles(styles)
@@ -23,18 +23,18 @@ define('dice-tray', (el) => {
     shareReplay(1)
   )
 
-  const diceChanged$ = fromEvent(document, 'dice-input-changed').pipe(
-    map(({ detail }) => detail),
+  const diceChanged$ = fromEvent(document, 'dice-picker-changed').pipe(
+    mergeMap(({ detail }) => from(detail)),
     shareReplay(1)
   )
   const addDice$ = diceChanged$.pipe(
     filter(({ diff }) => diff > 0),
-    map(({ diff, faces }) =>
+    map(({ diff, faceCount }) =>
       range(diff)
         .map(() => {
           const id = uuid()
           const key = getKey(id)
-          return { id, faces, key }
+          return { id, faceCount, key }
         })
     ),
     withLatestFrom(diceSet$),
@@ -43,12 +43,12 @@ define('dice-tray', (el) => {
   const removeDice$ = diceChanged$.pipe(
     filter(({ diff }) => diff < 0),
     withLatestFrom(diceSet$),
-    map(([{ diff, faces }, diceSet ]) => {
+    map(([{ diff, faceCount }, diceSet ]) => {
       let n = Math.abs(diff)
       return diceSet
         .reverse()
         .filter((die) => {
-          if (die.faces === faces && n > 0) {
+          if (die.faceCount === faceCount && n > 0) {
             n = n - 1
             return false
           }
@@ -101,6 +101,14 @@ define('dice-tray', (el) => {
   )
   subscribe(results$)
 
+  const preset$ = fromEventSelector(el, 'button[data-formula]', 'click').pipe(
+    map(({ target }) => target.dataset.formula),
+    tap((formula) => {
+      document.querySelector('dice-picker').formula = formula
+    })
+  )
+  subscribe(preset$)
+
   const roll$ = fromEventSelector(el, 'button[data-roll]', 'click').pipe(
     tap(() => {
       el.querySelectorAll('dice-die')
@@ -129,10 +137,23 @@ define('dice-tray', (el) => {
 })
 
 function render (props) {
-  const { count, diceSet } = props
-  if (count < 1) {
-    return html``
-  }
+  const { count } = props
+  return count < 1
+    ? renderPresets(props)
+    : renderTray(props)
+}
+
+function renderPresets (props) {
+  return html`
+    <ul>
+      <li><button data-formula="2d6">2d6</button></li>
+      <li><button data-formula="1d4 2d20">1d4 2d20</button></li>
+    </ul>
+  `
+}
+
+function renderTray (props) {
+  const { diceSet } = props
   return html`
     <div class='section section--card'>
       <button
@@ -168,9 +189,9 @@ function renderTotal (props) {
 }
 
 function renderDie (props) {
-  const { faces, key } = props
+  const { faceCount, key } = props
   return html.for(key)`
-    <dice-die faces=${faces} />
+    <dice-die faces=${faceCount} />
   `
 }
 
