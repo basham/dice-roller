@@ -1,8 +1,10 @@
-import { BehaviorSubject, Subject, from, fromEvent, merge } from 'rxjs'
-import { distinctUntilChanged, filter, map, mergeMap, shareReplay, tap, withLatestFrom } from 'rxjs/operators'
+import { BehaviorSubject, Subject, combineLatest, from, fromEvent, merge } from 'rxjs'
+import { distinctUntilChanged, filter, map, mergeMap, shareReplay, startWith, tap, withLatestFrom } from 'rxjs/operators'
 import { range } from '../util/array.js'
+import { encodeFormula } from '../util/dice.js'
 import { adoptStyles, define, html, keychain, renderComponent, uuid } from '../util/dom.js'
-import { animationFrame, combineLatestObject, fromEventSelector, next, useSubscribe } from '../util/rx.js'
+import { animationFrame, combineLatestObject, debug, fromEventSelector, next, useSubscribe } from '../util/rx.js'
+import { DEFAULT_FAVORITES } from '../constants.js'
 import styles from './dice-tray.css'
 
 adoptStyles(styles)
@@ -17,13 +19,51 @@ define('dice-tray', (el) => {
   const diceSet$ = new BehaviorSubject([])
   const total$ = new BehaviorSubject(0)
 
+  const favorites = getLocalStorageItem('favorites', DEFAULT_FAVORITES)
+  const favorites$ = new BehaviorSubject(favorites)
+
+  const updateFavorites$ = favorites$.pipe(
+    tap((value) => setLocalStorageItem('favorites', value))
+  )
+  subscribe(updateFavorites$)
+
+  const dicePickerChanged$ = fromEvent(document, 'dice-picker-changed')
+
+  const formula$ = dicePickerChanged$.pipe(
+    map(({ detail }) => detail),
+    startWith([]),
+    map(encodeFormula),
+    shareReplay(1)
+  )
+
+  const isFavorite$ = combineLatest(
+    favorites$,
+    formula$
+  ).pipe(
+    map(([ favorites, formula ]) => favorites.includes(formula)),
+    shareReplay(1)
+  )
+
+  const toggleFavorite$ = fromEventSelector(el, 'button[data-favorite]', 'click').pipe(
+    withLatestFrom(isFavorite$, favorites$, formula$),
+    map(([ , isFavorite, favorites, formula ]) => {
+      if (isFavorite) {
+        return favorites
+          .filter((item) => item !== formula)
+      }
+      return [ formula, ...favorites ]
+    }),
+    next(favorites$)
+  )
+  subscribe(toggleFavorite$)
+
   const count$ = diceSet$.pipe(
     map((diceSet) => diceSet.length),
     distinctUntilChanged(),
     shareReplay(1)
   )
 
-  const diceChanged$ = fromEvent(document, 'dice-picker-changed').pipe(
+  const diceChanged$ = dicePickerChanged$.pipe(
     mergeMap(({ detail }) => from(detail)),
     shareReplay(1)
   )
@@ -125,7 +165,9 @@ define('dice-tray', (el) => {
   const render$ = combineLatestObject({
     count: count$,
     diceSet: diceSet$,
-    total: total$
+    isFavorite: isFavorite$,
+    total: total$,
+    favorites: favorites$
   }).pipe(
     animationFrame(),
     renderComponent(el, render),
@@ -139,17 +181,32 @@ define('dice-tray', (el) => {
 function render (props) {
   const { count } = props
   return count < 1
-    ? renderPresets(props)
+    ? renderFavorites(props)
     : renderTray(props)
 }
 
-function renderPresets (props) {
+function renderFavorites (props) {
+  const { favorites } = props
   return html`
-    <ul>
-      <li><button data-formula="2d6">2d6</button></li>
-      <li><button data-formula="1d4 2d20">1d4 2d20</button></li>
-    </ul>
+    <div class='section section--divider'>
+      <h2 class='section__heading'>Favorites</h2>
+      <ul class='favorite__list'>
+       ${favorites.map(renderFavorite)}
+      </ul>
+    </div>
   `
+}
+
+function renderFavorite (formula) {
+  return html`
+    <li class='favorite__item'>
+      <button
+        class='button button--primary button--wide preset__button'
+        data-formula=${formula}>
+        ${formula}
+      </button>
+    </li>
+`
 }
 
 function renderTray (props) {
@@ -208,17 +265,33 @@ function renderLockedDice (props) {
 }
 
 function renderFooter (props) {
-  const { count } = props
+  const { count, isFavorite } = props
   if (count < 2) {
     return null
   }
   return html`
-    <div class='section section--divider'>
+    <div class='section section--divider section--spread'>
       <button
         class='button'
         data-reset>
         Reset
       </button>
+      <button
+        class=${`button${isFavorite ? ' button--primary' : ''}`}
+        data-favorite>
+        ${isFavorite ? 'Favorited' : 'Favorite'}
+      </button>
     </div>
   `
+}
+
+function getLocalStorageItem (key, defaultValue) {
+  const item = localStorage.getItem(key)
+  return (item === null && defaultValue !== undefined)
+    ? defaultValue
+    : JSON.parse(item)
+}
+
+function setLocalStorageItem (key, value) {
+  localStorage.setItem(key, JSON.stringify(value))
 }

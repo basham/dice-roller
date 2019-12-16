@@ -1,17 +1,30 @@
 dice-tray > .section {
-  padding-top: 2rem;
   text-align: center;
+}
+
+dice-tray > .section ~ .section {
+  margin-top: 2rem;
 }
 
 dice-tray > .section--divider {
   border-top: 0.25rem solid var(--color-black-09);
-  margin-top: 2rem;
+  padding-top: 2rem;
 }
 
 dice-tray > .section--card {
   background-color: var(--color-black-09);
   border-radius: 0.5rem;
   padding: 2rem;
+}
+
+dice-tray > .section--spread {
+  display: flex;
+  justify-content: space-between;
+}
+
+dice-tray .section__heading {
+  font-size: calc(18rem/16);
+  margin: 0;
 }
 
 dice-tray .total {
@@ -46,4 +59,14 @@ dice-tray > .dice-set {
 dice-tray > .locked > p {
   color: var(--color-black-03);
   margin: 0;
+}
+
+dice-tray .favorite__list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+dice-tray .favorite__item {
+  padding-top: 1rem;
 }
