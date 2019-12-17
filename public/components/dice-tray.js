@@ -201,9 +201,10 @@ function renderFavorite (formula) {
   return html`
     <li class='favorite__item'>
       <button
-        class='button button--primary button--wide preset__button'
+        class='button button--primary button--wide favorite__button'
         data-formula=${formula}>
         ${formula}
+        <dice-formula formula=${formula} />
       </button>
     </li>
 `

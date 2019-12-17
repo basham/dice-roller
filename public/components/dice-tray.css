@@ -70,3 +70,7 @@ dice-tray .favorite__list {
 dice-tray .favorite__item {
   padding-top: 1rem;
 }
+
+dice-tray .favorite__button {
+  padding-bottom: 0.5rem;
+}

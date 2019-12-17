@@ -1,0 +1,74 @@
+dice-formula {
+  display: grid;
+  font-size: calc(14rem/16);
+  font-weight: bold;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(4rem, max-content));
+  justify-content: center;
+  line-height: 1;
+  pointer-events: none;
+}
+
+dice-formula .expression {
+  align-items: center;
+  display: flex;
+}
+
+dice-formula .dice {
+  --size: 2rem;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  display: inline-flex;
+  flex-shrink: 0;
+  height: var(--size);
+  padding: 0;
+  position: relative;
+  width: var(--size);
+}
+
+dice-formula .dice[faces="4"] {
+  --color-fill: var(--color-blue-04);
+  --color-stroke: var(--color-blue-05);
+}
+
+dice-formula .dice[faces="6"] {
+  --color-fill: var(--color-orange-03);
+  --color-stroke: var(--color-orange-04);
+}
+
+dice-formula .dice[faces="8"] {
+  --color-fill: var(--color-green-03);
+  --color-stroke: var(--color-green-04);
+}
+
+dice-formula .dice[faces="10"] {
+  --color-fill: var(--color-purple-04);
+  --color-stroke: var(--color-purple-05);
+}
+
+dice-formula .dice[faces="12"] {
+  --color-fill: var(--color-teal-03);
+  --color-stroke: var(--color-teal-04);
+}
+
+dice-formula .dice[faces="20"] {
+  --color-fill: var(--color-yellow-02);
+  --color-stroke: var(--color-yellow-03);
+}
+
+dice-formula .dice > .icon {
+  fill: var(--color-fill);
+  height: 100%;
+  left: 0;
+  position: absolute;
+  stroke: var(--color-stroke);
+  stroke-linejoin: round;
+  stroke-width: 2;
+  top: 0;
+  width: 100%;
+}
+
+dice-formula .count {
+  padding-left: 0.25rem;
+}
