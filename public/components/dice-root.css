@@ -102,18 +102,6 @@ html {
   color: var(--color-black-01);
 }
 
-@media (max-height: 30em) and (orientation: landscape) {
-
-  html {
-    height: 100vw;
-    position: absolute;
-    top: 100%;
-    transform: rotate(-90deg);
-    transform-origin: left top;
-    width: 100vh;
-  }
-}
-
 body {
   font-family: system, sans-serif;
   font-size: 100%;
