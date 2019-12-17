@@ -31,6 +31,9 @@ function render (props) {
     <svg class='icon'>
       <use xlink:href=${icon} />
     </svg>
+    <svg class='lock lock--shadow'>
+      <use xlink:href=${lock} />
+    </svg>
     <svg class='lock'>
       <use xlink:href=${lock} />
     </svg>

@@ -132,6 +132,12 @@
   width: 1.5rem;
 }
 
+[is="dice-button"] > .lock--shadow {
+  fill: var(--color-black-08);
+  stroke: var(--color-black-08);
+  stroke-width: 8;
+}
+
 [is="dice-button"][aria-pressed="true"] > .lock {
   display: block;
 }
