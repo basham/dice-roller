@@ -1,0 +1,25 @@
+dice-upgrader .prompt {
+  align-items: center;
+  background-color: var(--color-black-09);
+  border-radius: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin: 2rem 2rem 0;
+  padding: 0.5rem;
+}
+
+dice-upgrader .prompt__message {
+  font-size: calc(18rem/16);
+  font-weight: bold;
+  line-height: calc(40rem/16);
+  padding: 0.5rem;
+}
+
+dice-upgrader .prompt__buttons {
+  display: flex;
+}
+
+dice-upgrader .prompt__buttons > * {
+  margin: 0.5rem;
+}

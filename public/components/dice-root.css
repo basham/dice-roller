@@ -170,3 +170,8 @@ dice-root > dice-tray {
 .button--wide {
   width: 100%;
 }
+
+.button--small {
+  line-height: 2rem;
+  padding: 0 0.5rem;
+}
