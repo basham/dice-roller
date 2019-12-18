@@ -14,6 +14,7 @@ define('dice-root', (el) => {
 function renderRoot () {
   return html`
     <dice-upgrader />
+    <dice-header />
     <dice-picker />
     <dice-tray />
   `
