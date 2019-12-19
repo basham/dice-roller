@@ -175,3 +175,39 @@ dice-root > dice-tray {
   line-height: 2rem;
   padding: 0 0.5rem;
 }
+
+.icon-button {
+  background-color: transparent;
+  border: none;
+  height: 3rem;
+  padding: 0;
+  width: 3rem;
+}
+
+.icon-button__icon {
+  fill: none;
+  height: 2rem;
+  left: 0;
+  stroke: var(--color-black-05);
+  stroke-linejoin: round;
+  stroke-width: 2;
+  width: 2rem;
+}
+
+.icon-button:focus {
+  outline: none;
+}
+
+.icon-button:focus .icon-button__icon,
+.icon-button:hover .icon-button__icon {
+  stroke: var(--color-black-01);
+}
+
+.icon-button[aria-pressed="true"] .icon-button__icon {
+  fill: var(--color-black-01);
+  stroke: var(--color-black-01);
+}
+
+.icon-button:active .icon-button__icon {
+  fill: var(--color-black-09);
+}

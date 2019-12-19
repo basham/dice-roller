@@ -1,12 +1,14 @@
 dice-header {
+  align-items: center;
   border-bottom: 0.25rem solid var(--color-black-09);
-  display: block;
+  display: flex;
+  justify-content: space-between;
   margin: 0 2rem;
-  padding: 1rem 0;
+  padding: 0.5rem 0;
 }
 
 dice-header .heading {
-  font-size: calc(24rem/16);
+  font-size: calc(20rem/16);
   line-height: 1;
   margin: 0;
   text-align: center;

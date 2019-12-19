@@ -17,8 +17,17 @@
   <symbol id="d20" viewBox="0 0 32 32">
     <polygon points="16 2 3.88 9 3.88 23 16 30 28.12 23 28.12 9 16 2"/>
   </symbol>
+  <symbol id="home" viewBox="0 0 32 32">
+    <polyline points="25 11 25 4 22 4 22 8"/>
+    <polyline points="2 16 16 2 30 16"/>
+    <polyline points="5 13 5 30 27 30 27 13"/>
+    <rect x="12" y="16" width="8" height="14"/>
+  </symbol>
   <symbol id="lock" viewBox="0 0 32 32">
     <path d="M23,16V9A7,7,0,0,0,9,9v7" fill="none"/>
     <rect x="4" y="17" width="24" height="11"/>
+  </symbol>
+  <symbol id="star" viewBox="0 0 32 32">
+    <polygon points="16 25 7.18 29.14 8.39 19.47 1.73 12.37 11.3 10.53 16 2 20.7 10.53 30.27 12.37 23.61 19.47 24.82 29.14 16 25"/>
   </symbol>
 </svg>
