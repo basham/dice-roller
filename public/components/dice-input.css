@@ -12,7 +12,7 @@ dice-input > .label {
 }
 
 dice-input > .increment-button {
-  margin: 0.5rem 0;
+  margin-top: 0.5rem;
 }
 
 dice-input > .decrement-button {
@@ -24,6 +24,7 @@ dice-input > .decrement-button {
   font-size: calc(14rem/16);
   font-weight: bold;
   line-height: calc(16rem/16);
+  margin-top: 0.5rem;
   padding: 0 0.25rem;
   white-space: nowrap;
   width: 100%;
@@ -40,5 +41,6 @@ dice-input > .decrement-button:active {
 }
 
 dice-input > .decrement-button:disabled {
-  visibility: hidden;
+  _visibility: hidden;
+  display: none;
 }
