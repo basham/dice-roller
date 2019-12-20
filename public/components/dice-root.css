@@ -117,8 +117,6 @@ button {
 
 dice-root {
   display: block;
-  margin: 0 auto;
-  max-width: 40rem;
 }
 
 dice-root > dice-picker {
@@ -179,13 +177,16 @@ dice-root > dice-tray {
 .icon-button {
   background-color: transparent;
   border: none;
-  height: 3rem;
-  padding: 0;
-  width: 3rem;
+  display: inline-flex;
+  padding: 0.5rem;
+}
+
+.icon-button--small {
+  padding: 0.25rem;
 }
 
 .icon-button__icon {
-  fill: none;
+  fill: var(--color-black-08);
   height: 2rem;
   left: 0;
   stroke: var(--color-black-05);
@@ -210,4 +211,8 @@ dice-root > dice-tray {
 
 .icon-button:active .icon-button__icon {
   fill: var(--color-black-09);
+}
+
+.icon-button--light .icon-button__icon {
+  stroke: var(--color-black-08);
 }

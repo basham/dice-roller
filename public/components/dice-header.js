@@ -20,13 +20,16 @@ define('dice-header', (el) => {
 function render (props) {
   const { heading } = props
   return html`
-    <button class='icon-button'>
+    <button
+      aria-label='Home'
+      class='icon-button'>
       <svg class='icon-button__icon'>
         <use xlink:href='./dice.svg#home' />
       </svg>
     </button>
     <h1 class='heading'>${heading}</h1>
     <button
+      aria-label='Favorite'
       aria-pressed='false'
       class='icon-button'>
       <svg class='icon-button__icon'>

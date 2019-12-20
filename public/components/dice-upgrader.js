@@ -78,9 +78,12 @@ function renderPrompt () {
           Upgrade
         </button>
         <button
-          class='button button--small'
+          aria-label='Dismiss'
+          class='icon-button icon-button--small icon-button--light'
           data-dismiss>
-          Dismiss
+          <svg class='icon-button__icon'>
+            <use xlink:href='./dice.svg#close' />
+          </svg>
         </button>
       </div>
     </div>

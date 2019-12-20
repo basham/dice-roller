@@ -1,6 +1,12 @@
+dice-upgrader {
+  display: block;
+  margin: 0 auto;
+  max-width: 40rem;
+}
+
 dice-upgrader .prompt {
   align-items: center;
-  background-color: var(--color-black-09);
+  background-color: var(--color-green-03);
   border-radius: 0.5rem;
   display: flex;
   flex-wrap: wrap;
@@ -10,6 +16,7 @@ dice-upgrader .prompt {
 }
 
 dice-upgrader .prompt__message {
+  color: var(--color-black-09);
   font-size: calc(18rem/16);
   font-weight: bold;
   line-height: calc(40rem/16);
