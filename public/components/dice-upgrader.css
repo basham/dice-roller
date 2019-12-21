@@ -20,7 +20,7 @@ dice-upgrader .prompt__message {
   font-size: calc(18rem/16);
   font-weight: bold;
   line-height: calc(40rem/16);
-  padding: 0.5rem;
+  padding: 0 0.5rem;
 }
 
 dice-upgrader .prompt__buttons {
