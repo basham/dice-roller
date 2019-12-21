@@ -2,6 +2,7 @@ import { combineLatest } from 'rxjs'
 import { distinctUntilChanged, map, mapTo, shareReplay, tap, withLatestFrom } from 'rxjs/operators'
 import { adoptStyles, define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject, debug, fromEventSelector, useSubscribe } from '../util/rx.js'
+import { APP_NAME } from '../constants.js'
 import { useStore } from '../store.js'
 import styles from './dice-header.css'
 
@@ -21,12 +22,34 @@ define('dice-header', (el) => {
     distinctUntilChanged()
   )
 
-  const isFavorite$ = combineLatest(
+  const favorite$ = combineLatest(
     favorites$,
     formula$
   ).pipe(
-    map(([ favorites, formula ]) => favorites.includes(formula)),
+    map(([ favorites, formula ]) =>
+      favorites
+        .find((favorite) => favorite.formula === formula)
+    ),
     shareReplay(1)
+  )
+
+  const isFavorite$ = favorite$.pipe(
+    map((favorite) => !!favorite)
+  )
+
+  const heading$ = combineLatest(
+    formula$,
+    favorite$
+  ).pipe(
+    map(([ formula, favorite ]) => {
+      if (!formula) {
+        return APP_NAME
+      }
+      if (favorite) {
+        return favorite.label
+      }
+      return formula
+    })
   )
 
   const home$ = fromEventSelector(el, 'button[data-home]', 'click').pipe(
@@ -41,9 +64,10 @@ define('dice-header', (el) => {
     map(([ , isFavorite, favorites, formula ]) => {
       if (isFavorite) {
         return favorites
-          .filter((item) => item !== formula)
+          .filter((item) => item.formula !== formula)
       }
-      return [ ...favorites, formula ]
+      const newFavorite = { label: formula, formula }
+      return [ ...favorites, newFavorite ]
     }),
     withLatestFrom(setFavorites$),
     tap(([ value, set ]) => set(value))
@@ -52,7 +76,7 @@ define('dice-header', (el) => {
 
   const render$ = combineLatestObject({
     hasFormula: hasFormula$,
-    heading: 'Dice Roller',
+    heading: heading$,
     isFavorite: isFavorite$,
   }).pipe(
     renderComponent(el, render)

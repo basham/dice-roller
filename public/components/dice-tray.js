@@ -1,7 +1,6 @@
 import { BehaviorSubject, Subject, from, fromEvent, merge } from 'rxjs'
 import { distinctUntilChanged, filter, map, mergeMap, shareReplay, startWith, tap, withLatestFrom } from 'rxjs/operators'
 import { range } from '../util/array.js'
-import { encodeFormula } from '../util/dice.js'
 import { adoptStyles, define, html, keychain, renderComponent, uuid } from '../util/dom.js'
 import { animationFrame, combineLatestObject, debug, fromEventSelector, next, useSubscribe } from '../util/rx.js'
 import { useStore } from '../store.js'
@@ -158,13 +157,14 @@ function renderFavorites (props) {
   `
 }
 
-function renderFavorite (formula) {
+function renderFavorite (props) {
+  const { label, formula } = props
   return html`
     <li class='favorite__item'>
       <button
         class='button button--primary button--wide favorite__button'
         data-formula=${formula}>
-        ${formula}
+        ${label}
         <dice-formula formula=${formula} />
       </button>
     </li>

@@ -2,7 +2,7 @@ import { BehaviorSubject } from 'rxjs'
 import { tap } from 'rxjs/operators'
 import { adoptStyles, define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject, useSubscribe } from '../util/rx.js'
-import { DEFAULT_FAVORITES } from '../constants.js'
+import { FAVORITES } from '../constants.js'
 import { useStore, getLocalStorageItem, setLocalStorageItem } from '../store.js'
 import styles from './dice-root.css'
 
@@ -21,7 +21,7 @@ define('dice-root', (el) => {
   store.set('formula$', formula$)
   store.set('setFormula', setFormula)
 
-  const favorites = getLocalStorageItem('favorites', DEFAULT_FAVORITES)
+  const favorites = getLocalStorageItem('favorites', FAVORITES)
   const favorites$ = new BehaviorSubject(favorites)
   const setFavorites = (value) => favorites$.next(value)
   store.set('favorites$', favorites$)
