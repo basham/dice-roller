@@ -1,0 +1,43 @@
+dice-favorites {
+  display: block;
+  margin: 0 auto;
+  max-width: 40rem;
+  padding: 0 2rem 2rem;
+}
+
+dice-favorites[hidden] {
+  display: none;
+}
+
+dice-favorites > .section {
+  text-align: center;
+}
+
+dice-favorites > .section ~ .section {
+  margin-top: 2rem;
+}
+
+dice-favorites > .section--divider {
+  border-top: 0.25rem solid var(--color-black-09);
+  padding-top: 2rem;
+}
+
+dice-favorites .section__heading {
+  font-size: calc(18rem/16);
+  line-height: calc(24rem/16);
+  margin: 0 0 1rem;
+}
+
+dice-favorites .favorite__list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+dice-favorites .favorite__item {
+  padding-top: 1rem;
+}
+
+dice-favorites .favorite__button {
+  padding-bottom: 0.5rem;
+}

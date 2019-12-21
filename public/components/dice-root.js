@@ -1,5 +1,5 @@
 import { BehaviorSubject } from 'rxjs'
-import { tap } from 'rxjs/operators'
+import { distinctUntilChanged, map, tap } from 'rxjs/operators'
 import { adoptStyles, define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject, useSubscribe } from '../util/rx.js'
 import { FAVORITES } from '../constants.js'
@@ -21,6 +21,11 @@ define('dice-root', (el) => {
   store.set('formula$', formula$)
   store.set('setFormula', setFormula)
 
+  const hasFormula$ = formula$.pipe(
+    map((formula) => formula !== ''),
+    distinctUntilChanged()
+  )
+
   const favorites = getLocalStorageItem('favorites', FAVORITES)
   const favorites$ = new BehaviorSubject(favorites)
   const setFavorites = (value) => favorites$.next(value)
@@ -33,6 +38,7 @@ define('dice-root', (el) => {
   subscribe(updateFavorites$)
 
   const render$ = combineLatestObject({
+    hasFormula: hasFormula$
   }).pipe(
     renderComponent(el, render)
   )
@@ -41,11 +47,13 @@ define('dice-root', (el) => {
   return unsubscribe
 })
 
-function render () {
+function render (props) {
+  const { hasFormula } = props
   return html`
     <dice-header />
     <dice-upgrader />
     <dice-picker />
-    <dice-tray />
+    <dice-favorites hidden=${hasFormula} />
+    <dice-tray hidden=${!hasFormula} />
   `
 }

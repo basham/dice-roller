@@ -4,6 +4,10 @@ dice-tray {
   max-width: 40rem;
 }
 
+dice-tray[hidden] {
+  display: none;
+}
+
 dice-tray > .section {
   text-align: center;
 }
@@ -66,18 +70,4 @@ dice-tray > .dice-set {
 dice-tray > .locked > p {
   color: var(--color-black-03);
   margin: 0;
-}
-
-dice-tray .favorite__list {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-}
-
-dice-tray .favorite__item {
-  padding-top: 1rem;
-}
-
-dice-tray .favorite__button {
-  padding-bottom: 0.5rem;
 }

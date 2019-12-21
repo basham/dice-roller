@@ -19,9 +19,6 @@ define('dice-tray', (el) => {
   const diceSet$ = new BehaviorSubject([])
   const total$ = new BehaviorSubject(0)
 
-  const favorites$ = store.get('favorites$')
-  const setFormula$ = store.get('setFormula')
-
   const dicePickerChanged$ = fromEvent(document, 'dice-picker-changed')
 
   const count$ = diceSet$.pipe(
@@ -108,13 +105,6 @@ define('dice-tray', (el) => {
   )
   subscribe(results$)
 
-  const preset$ = fromEventSelector(el, 'button[data-formula]', 'click').pipe(
-    map(({ target }) => target.dataset.formula),
-    withLatestFrom(setFormula$),
-    tap(([ value, set ]) => set(value))
-  )
-  subscribe(preset$)
-
   const roll$ = fromEventSelector(el, 'button[data-roll]', 'click').pipe(
     tap(() => {
       el.querySelectorAll('dice-die')
@@ -126,8 +116,7 @@ define('dice-tray', (el) => {
   const render$ = combineLatestObject({
     count: count$,
     diceSet: diceSet$,
-    total: total$,
-    favorites: favorites$
+    total: total$
   }).pipe(
     animationFrame(),
     renderComponent(el, render),
@@ -139,39 +128,6 @@ define('dice-tray', (el) => {
 })
 
 function render (props) {
-  const { count } = props
-  return count < 1
-    ? renderFavorites(props)
-    : renderTray(props)
-}
-
-function renderFavorites (props) {
-  const { favorites } = props
-  return html`
-    <div class='section section--divider'>
-      <h2 class='section__heading'>Favorites</h2>
-      <ul class='favorite__list'>
-       ${favorites.map(renderFavorite)}
-      </ul>
-    </div>
-  `
-}
-
-function renderFavorite (props) {
-  const { label, formula } = props
-  return html`
-    <li class='favorite__item'>
-      <button
-        class='button button--primary button--wide favorite__button'
-        data-formula=${formula}>
-        ${label}
-        <dice-formula formula=${formula} />
-      </button>
-    </li>
-`
-}
-
-function renderTray (props) {
   const { diceSet } = props
   return html`
     <div class='section section--card'>
