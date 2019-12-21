@@ -41,6 +41,5 @@ dice-input > .decrement-button:active {
 }
 
 dice-input > .decrement-button:disabled {
-  _visibility: hidden;
   display: none;
 }

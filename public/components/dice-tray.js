@@ -1,10 +1,10 @@
-import { BehaviorSubject, Subject, combineLatest, from, fromEvent, merge } from 'rxjs'
+import { BehaviorSubject, Subject, from, fromEvent, merge } from 'rxjs'
 import { distinctUntilChanged, filter, map, mergeMap, shareReplay, startWith, tap, withLatestFrom } from 'rxjs/operators'
 import { range } from '../util/array.js'
 import { encodeFormula } from '../util/dice.js'
 import { adoptStyles, define, html, keychain, renderComponent, uuid } from '../util/dom.js'
 import { animationFrame, combineLatestObject, debug, fromEventSelector, next, useSubscribe } from '../util/rx.js'
-import { DEFAULT_FAVORITES } from '../constants.js'
+import { useStore } from '../store.js'
 import styles from './dice-tray.css'
 
 adoptStyles(styles)
@@ -12,6 +12,7 @@ adoptStyles(styles)
 define('dice-tray', (el) => {
   const [ subscribe, unsubscribe ] = useSubscribe()
 
+  const store = useStore(el)
   const getKey = keychain()
 
   const componentDidUpdate$ = new Subject()
@@ -19,43 +20,10 @@ define('dice-tray', (el) => {
   const diceSet$ = new BehaviorSubject([])
   const total$ = new BehaviorSubject(0)
 
-  const favorites = getLocalStorageItem('favorites', DEFAULT_FAVORITES)
-  const favorites$ = new BehaviorSubject(favorites)
-
-  const updateFavorites$ = favorites$.pipe(
-    tap((value) => setLocalStorageItem('favorites', value))
-  )
-  subscribe(updateFavorites$)
+  const favorites$ = store.get('favorites$')
+  const setFormula$ = store.get('setFormula')
 
   const dicePickerChanged$ = fromEvent(document, 'dice-picker-changed')
-
-  const formula$ = dicePickerChanged$.pipe(
-    map(({ detail }) => detail),
-    startWith([]),
-    map(encodeFormula),
-    shareReplay(1)
-  )
-
-  const isFavorite$ = combineLatest(
-    favorites$,
-    formula$
-  ).pipe(
-    map(([ favorites, formula ]) => favorites.includes(formula)),
-    shareReplay(1)
-  )
-
-  const toggleFavorite$ = fromEventSelector(el, 'button[data-favorite]', 'click').pipe(
-    withLatestFrom(isFavorite$, favorites$, formula$),
-    map(([ , isFavorite, favorites, formula ]) => {
-      if (isFavorite) {
-        return favorites
-          .filter((item) => item !== formula)
-      }
-      return [ formula, ...favorites ]
-    }),
-    next(favorites$)
-  )
-  subscribe(toggleFavorite$)
 
   const count$ = diceSet$.pipe(
     map((diceSet) => diceSet.length),
@@ -143,9 +111,8 @@ define('dice-tray', (el) => {
 
   const preset$ = fromEventSelector(el, 'button[data-formula]', 'click').pipe(
     map(({ target }) => target.dataset.formula),
-    tap((formula) => {
-      document.querySelector('dice-picker').formula = formula
-    })
+    withLatestFrom(setFormula$),
+    tap(([ value, set ]) => set(value))
   )
   subscribe(preset$)
 
@@ -157,15 +124,9 @@ define('dice-tray', (el) => {
   )
   subscribe(roll$)
 
-  const reset$ = fromEventSelector(el, 'button[data-reset]', 'click').pipe(
-    tap(() => document.querySelector('dice-picker').reset())
-  )
-  subscribe(reset$)
-
   const render$ = combineLatestObject({
     count: count$,
     diceSet: diceSet$,
-    isFavorite: isFavorite$,
     total: total$,
     favorites: favorites$
   }).pipe(
@@ -225,7 +186,6 @@ function renderTray (props) {
       ${diceSet.map(renderDie)}
     </div>
     ${renderLockedDice(props)}
-    ${renderFooter(props)}
   `
 }
 
@@ -263,36 +223,4 @@ function renderLockedDice (props) {
       <p>Tap dice to lock their value</p>
     </div>
   `
-}
-
-function renderFooter (props) {
-  const { count, isFavorite } = props
-  if (count < 2) {
-    return null
-  }
-  return html`
-    <div class='section section--divider section--spread'>
-      <button
-        class='button'
-        data-reset>
-        Reset
-      </button>
-      <button
-        class=${`button${isFavorite ? ' button--primary' : ''}`}
-        data-favorite>
-        ${isFavorite ? 'Favorited' : 'Favorite'}
-      </button>
-    </div>
-  `
-}
-
-function getLocalStorageItem (key, defaultValue) {
-  const item = localStorage.getItem(key)
-  return (item === null && defaultValue !== undefined)
-    ? defaultValue
-    : JSON.parse(item)
-}
-
-function setLocalStorageItem (key, value) {
-  localStorage.setItem(key, JSON.stringify(value))
 }

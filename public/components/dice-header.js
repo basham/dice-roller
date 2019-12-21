@@ -1,14 +1,59 @@
+import { combineLatest } from 'rxjs'
+import { distinctUntilChanged, map, mapTo, shareReplay, tap, withLatestFrom } from 'rxjs/operators'
 import { adoptStyles, define, html, renderComponent } from '../util/dom.js'
-import { combineLatestObject, useSubscribe } from '../util/rx.js'
+import { combineLatestObject, debug, fromEventSelector, useSubscribe } from '../util/rx.js'
+import { useStore } from '../store.js'
 import styles from './dice-header.css'
 
 adoptStyles(styles)
 
 define('dice-header', (el) => {
   const [ subscribe, unsubscribe ] = useSubscribe()
+  const store = useStore(el)
+
+  const favorites$ = store.get('favorites$')
+  const setFavorites$ = store.get('setFavorites')
+
+  const formula$ = store.get('formula$')
+  const setFormula$ = store.get('setFormula')
+  const hasFormula$ = formula$.pipe(
+    map((formula) => formula !== ''),
+    distinctUntilChanged()
+  )
+
+  const isFavorite$ = combineLatest(
+    favorites$,
+    formula$
+  ).pipe(
+    map(([ favorites, formula ]) => favorites.includes(formula)),
+    shareReplay(1)
+  )
+
+  const home$ = fromEventSelector(el, 'button[data-home]', 'click').pipe(
+    mapTo(''),
+    withLatestFrom(setFormula$),
+    tap(([ value, set ]) => set(value))
+  )
+  subscribe(home$)
+
+  const toggleFavorite$ = fromEventSelector(el, 'button[data-favorite]', 'click').pipe(
+    withLatestFrom(isFavorite$, favorites$, formula$),
+    map(([ , isFavorite, favorites, formula ]) => {
+      if (isFavorite) {
+        return favorites
+          .filter((item) => item !== formula)
+      }
+      return [ ...favorites, formula ]
+    }),
+    withLatestFrom(setFavorites$),
+    tap(([ value, set ]) => set(value))
+  )
+  subscribe(toggleFavorite$)
 
   const render$ = combineLatestObject({
-    heading: 'Dice Roller'
+    hasFormula: hasFormula$,
+    heading: 'Dice Roller',
+    isFavorite: isFavorite$,
   }).pipe(
     renderComponent(el, render)
   )
@@ -18,11 +63,13 @@ define('dice-header', (el) => {
 })
 
 function render (props) {
-  const { heading } = props
+  const { hasFormula, heading, isFavorite } = props
   return html`
     <button
       aria-label='Home'
-      class='icon-button'>
+      class='icon-button'
+      data-home
+      hidden=${!hasFormula}>
       <svg class='icon-button__icon'>
         <use xlink:href='./dice.svg#home' />
       </svg>
@@ -30,8 +77,10 @@ function render (props) {
     <h1 class='heading'>${heading}</h1>
     <button
       aria-label='Favorite'
-      aria-pressed='false'
-      class='icon-button'>
+      aria-pressed=${isFavorite}
+      class='icon-button'
+      data-favorite
+      hidden=${!hasFormula}>
       <svg class='icon-button__icon'>
         <use xlink:href='./dice.svg#star' />
       </svg>

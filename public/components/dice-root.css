@@ -181,6 +181,10 @@ dice-root > dice-tray {
   padding: 0.5rem;
 }
 
+.icon-button[hidden] {
+  visibility: hidden;
+}
+
 .icon-button--small {
   padding: 0.25rem;
 }
@@ -189,6 +193,7 @@ dice-root > dice-tray {
   fill: var(--color-black-08);
   height: 2rem;
   left: 0;
+  pointer-events: none;
   stroke: var(--color-black-05);
   stroke-linejoin: round;
   stroke-width: 2;

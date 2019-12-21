@@ -2,15 +2,19 @@ import { merge } from 'rxjs'
 import { map, mapTo, pairwise, tap, withLatestFrom } from 'rxjs/operators'
 import { decodeFormula, encodeFormula } from '../util/dice.js'
 import { adoptStyles, define, html, renderComponent } from '../util/dom.js'
-import { combineLatestObject, fromEventSelector, fromMethod, fromProperty, next, useSubscribe } from '../util/rx.js'
+import { combineLatestObject, fromEventSelector, fromMethod, useSubscribe } from '../util/rx.js'
+import { useStore } from '../store.js'
 import styles from './dice-picker.css'
 
 adoptStyles(styles)
 
 define('dice-picker', (el) => {
   const [ subscribe, unsubscribe ] = useSubscribe()
+  const store = useStore(el)
 
-  const formula$ = fromProperty(el, 'formula', { defaultValue: '', reflect: false, type: String })
+  const formula$ = store.get('formula$')
+  const setFormula$ = store.get('setFormula')
+
   const picker$ = formula$.pipe(
     map(decodeFormula)
   )
@@ -58,13 +62,15 @@ define('dice-picker', (el) => {
         })
     ),
     map(encodeFormula),
-    next(formula$)
+    withLatestFrom(setFormula$),
+    tap(([ value, set ]) => set(value))
   )
   subscribe(changeDieCount$)
 
   const reset$ = fromMethod(el, 'reset').pipe(
     mapTo(''),
-    next(formula$),
+    withLatestFrom(setFormula$),
+    tap(([ value, set ]) => set(value)),
     tap(() => {
       el.setAttribute('tabindex', -1)
       el.focus()
