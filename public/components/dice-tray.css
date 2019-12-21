@@ -30,7 +30,8 @@ dice-tray > .section--spread {
 
 dice-tray .section__heading {
   font-size: calc(18rem/16);
-  margin: 0;
+  line-height: calc(24rem/16);
+  margin: 0 0 1rem;
 }
 
 dice-tray .total {
