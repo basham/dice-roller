@@ -2,7 +2,7 @@ dice-formula {
   display: grid;
   font-size: calc(14rem/16);
   font-weight: bold;
-  gap: 1rem;
+  gap: 0.25rem;
   grid-template-columns: repeat(auto-fit, minmax(4rem, max-content));
   justify-content: center;
   line-height: 1;
