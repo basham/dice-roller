@@ -1,16 +1,32 @@
-import { combineLatest } from 'rxjs'
-import { distinctUntilChanged, map, mapTo, shareReplay, tap, withLatestFrom } from 'rxjs/operators'
+import { BehaviorSubject, combineLatest } from 'rxjs'
+import { distinctUntilChanged, filter, map, mapTo, shareReplay, tap, withLatestFrom } from 'rxjs/operators'
 import { adoptStyles, define, html, renderComponent } from '../util/dom.js'
-import { combineLatestObject, debug, fromEventSelector, useSubscribe } from '../util/rx.js'
+import { combineLatestObject, debug, fromEventSelector, next, useSubscribe } from '../util/rx.js'
 import { APP_NAME } from '../constants.js'
 import { useStore } from '../store.js'
 import styles from './dice-header.css'
 
 adoptStyles(styles)
 
+const states = {
+  IDLE: 'idle',
+  NOT_FAVORITE: 'not-favorite',
+  FAVORITE: 'favorite',
+  RENAME: 'rename'
+}
+
+const renderMap = {
+  [states.IDLE]: renderIdleState,
+  [states.NOT_FAVORITE]: renderNotFavoriteState,
+  [states.FAVORITE]: renderFavoriteState,
+  [states.RENAME]: renderRenameState
+}
+
 define('dice-header', (el) => {
   const [ subscribe, unsubscribe ] = useSubscribe()
   const store = useStore(el)
+
+  const state$ = new BehaviorSubject(states.IDLE)
 
   const favorites$ = store.get('favorites$')
   const setFavorites$ = store.get('setFavorites')
@@ -52,6 +68,43 @@ define('dice-header', (el) => {
     })
   )
 
+  const idle$ = formula$.pipe(
+    filter((formula) => !formula),
+    next(state$, () => states.IDLE)
+  )
+  subscribe(idle$)
+
+  const withFormula$ = formula$.pipe(
+    filter((formula) => formula)
+  )
+  const _favorite$ = combineLatest(
+    favorites$,
+    withFormula$
+  ).pipe(
+    map(([ favorites, formula ]) =>
+      favorites
+        .find((favorite) => favorite.formula === formula)
+    ),
+    next(state$, (favorite) => favorite ? states.FAVORITE : states.NOT_FAVORITE)
+  )
+  subscribe(_favorite$)
+
+  const rename$ = fromEventSelector(el, 'button[data-rename]', 'click').pipe(
+    next(state$, () => states.RENAME)
+  )
+  subscribe(rename$)
+
+  const saveRename$ = fromEventSelector(el, 'form[data-rename]', 'submit').pipe(
+    tap((event) => event.preventDefault()),
+    next(state$, () => states.FAVORITE)
+  )
+  subscribe(saveRename$)
+
+  const cancelRename$ = fromEventSelector(el, 'button[data-cancel-rename]', 'click').pipe(
+    next(state$, () => states.FAVORITE)
+  )
+  subscribe(cancelRename$)
+
   const home$ = fromEventSelector(el, 'button[data-home]', 'click').pipe(
     mapTo(''),
     withLatestFrom(setFormula$),
@@ -78,6 +131,8 @@ define('dice-header', (el) => {
     hasFormula: hasFormula$,
     heading: heading$,
     isFavorite: isFavorite$,
+    formula: formula$,
+    state: state$
   }).pipe(
     renderComponent(el, render)
   )
@@ -87,24 +142,89 @@ define('dice-header', (el) => {
 })
 
 function render (props) {
-  const { hasFormula, heading, isFavorite } = props
+  const { state } = props
+  return renderMap[state](props)
+}
+
+function renderIdleState () {
+  return html`
+    ${renderHomeButton({ hidden: true })}
+    ${renderHeading({ label: APP_NAME })}
+    ${renderFavoriteButton({ hidden: true })}
+  `
+}
+
+function renderNotFavoriteState (props) {
+  const { formula } = props
+  return html`
+    ${renderHomeButton()}
+    ${renderHeading({ label: formula })}
+    ${renderFavoriteButton()}
+  `
+}
+
+function renderFavoriteState (props) {
+  const { formula } = props
+  return html`
+    ${renderHomeButton()}
+    <h1 class='heading'>
+      <button data-rename>${formula}</button>
+    </h1>
+    ${renderFavoriteButton({ pressed: true })}
+  `
+}
+
+function renderRenameState (props) {
+  const { label } = props
+  return html`
+    <form data-rename>
+      <input
+        aria-label='Name'
+        type='text'
+        value=${label} />
+      <button type='submit'>
+        Save
+      </button>
+      <button
+        data-cancel-rename
+        type='button'>
+        Cancel
+      </button>
+    </form>
+  `
+}
+
+function renderHomeButton (props = {}) {
+  const { hidden = false } = props
   return html`
     <button
       aria-label='Home'
       class='icon-button'
       data-home
-      hidden=${!hasFormula}>
+      hidden=${hidden}>
       <svg class='icon-button__icon'>
         <use xlink:href='./dice.svg#home' />
       </svg>
     </button>
-    <h1 class='heading'>${heading}</h1>
+  `
+}
+
+function renderHeading (props) {
+  const { label } = props
+  return html`
+    <h1 class='heading'>${label}</h1>
+  `
+}
+
+function renderFavoriteButton (props = {}) {
+  const { hidden = false, pressed = false } = props
+  return html`
     <button
       aria-label='Favorite'
-      aria-pressed=${isFavorite}
+      aria-pressed=${pressed}
       class='icon-button'
       data-favorite
-      hidden=${!hasFormula}>
+      hidden=${hidden}>
       <svg class='icon-button__icon'>
         <use xlink:href='./dice.svg#star' />
       </svg>
