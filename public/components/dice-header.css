@@ -49,6 +49,7 @@ dice-header .rename-form {
 dice-header .rename-input {
   background-color: var(--color-black-08);
   border: calc(2rem/16) solid var(--color-black-01);
+  border-radius: calc(2rem/16);
   color: inherit;
   font-size: inherit;
   font-weight: inherit;

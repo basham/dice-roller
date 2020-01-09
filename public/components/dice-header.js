@@ -78,7 +78,11 @@ define('dice-header', (el) => {
 
   const initRename$ = fromEventSelector(el, 'button[data-rename]', 'click').pipe(
     next(state$, () => states.RENAME),
-    tap(() => window.requestAnimationFrame(() => el.querySelector('input[data-rename]').focus()))
+    tap(() => window.requestAnimationFrame(() => {
+      const input = el.querySelector('input[data-rename]')
+      input.focus()
+      input.click() // Open iOS keyboard
+    }))
   )
   subscribe(initRename$)
 
