@@ -92,14 +92,13 @@ define('dice-header', (el) => {
   const renameInputEnter$ = renameInputKeydown$.pipe(
     filter((key) => key === 'Enter')
   )
-  const renameInputBlur$ = fromEventSelector(el, 'input[data-rename]', 'blur').pipe(
-    withLatestFrom(state$),
-    filter(([ , state ]) => state === states.RENAME)
-  )
+  const renameInputBlur$ = fromEventSelector(el, 'input[data-rename]', 'blur')
   const submitRename$ = merge(
     renameInputEnter$,
     renameInputBlur$
   ).pipe(
+    withLatestFrom(state$),
+    filter(([ , state ]) => state === states.RENAME),
     map(() => el.querySelector('input[data-rename]').value.trim()),
     withLatestFrom(favorites$, formula$),
     map(([ label, favorites, formula ]) =>
