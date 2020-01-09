@@ -1,5 +1,5 @@
 import { BehaviorSubject, combineLatest } from 'rxjs'
-import { distinctUntilChanged, filter, map, mapTo, shareReplay, tap, withLatestFrom } from 'rxjs/operators'
+import { distinctUntilChanged, filter, map, mapTo, shareReplay, tap, withLatestFrom, startWith } from 'rxjs/operators'
 import { adoptStyles, define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject, debug, fromEventSelector, next, useSubscribe } from '../util/rx.js'
 import { APP_NAME } from '../constants.js'
@@ -77,7 +77,7 @@ define('dice-header', (el) => {
   const withFormula$ = formula$.pipe(
     filter((formula) => formula)
   )
-  const _favorite$ = combineLatest(
+  const favoriteLabel$ = combineLatest(
     favorites$,
     withFormula$
   ).pipe(
@@ -85,9 +85,11 @@ define('dice-header', (el) => {
       favorites
         .find((favorite) => favorite.formula === formula)
     ),
-    next(state$, (favorite) => favorite ? states.FAVORITE : states.NOT_FAVORITE)
+    next(state$, (favorite) => favorite ? states.FAVORITE : states.NOT_FAVORITE),
+    map((favorite) => favorite ? favorite.label : ''),
+    startWith('')
   )
-  subscribe(_favorite$)
+  subscribe(favoriteLabel$)
 
   const rename$ = fromEventSelector(el, 'button[data-rename]', 'click').pipe(
     next(state$, () => states.RENAME)
@@ -131,6 +133,7 @@ define('dice-header', (el) => {
     hasFormula: hasFormula$,
     heading: heading$,
     isFavorite: isFavorite$,
+    label: favoriteLabel$,
     formula: formula$,
     state: state$
   }).pipe(
@@ -164,11 +167,11 @@ function renderNotFavoriteState (props) {
 }
 
 function renderFavoriteState (props) {
-  const { formula } = props
+  const { label } = props
   return html`
     ${renderHomeButton()}
     <h1 class='heading'>
-      <button data-rename>${formula}</button>
+      <button data-rename>${label}</button>
     </h1>
     ${renderFavoriteButton({ pressed: true })}
   `
@@ -180,6 +183,7 @@ function renderRenameState (props) {
     <form data-rename>
       <input
         aria-label='Name'
+        autofocus
         type='text'
         value=${label} />
       <button type='submit'>
