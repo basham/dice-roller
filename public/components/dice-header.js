@@ -1,4 +1,4 @@
-import { BehaviorSubject, combineLatest } from 'rxjs'
+import { BehaviorSubject, combineLatest, merge } from 'rxjs'
 import { distinctUntilChanged, filter, map, mapTo, shareReplay, tap, withLatestFrom, startWith } from 'rxjs/operators'
 import { adoptStyles, define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject, debug, fromEventSelector, next, useSubscribe } from '../util/rx.js'
@@ -53,21 +53,6 @@ define('dice-header', (el) => {
     map((favorite) => !!favorite)
   )
 
-  const heading$ = combineLatest(
-    formula$,
-    favorite$
-  ).pipe(
-    map(([ formula, favorite ]) => {
-      if (!formula) {
-        return APP_NAME
-      }
-      if (favorite) {
-        return favorite.label
-      }
-      return formula
-    })
-  )
-
   const idle$ = formula$.pipe(
     filter((formula) => !formula),
     next(state$, () => states.IDLE)
@@ -91,27 +76,48 @@ define('dice-header', (el) => {
   )
   subscribe(favoriteLabel$)
 
-  const rename$ = fromEventSelector(el, 'button[data-rename]', 'click').pipe(
-    next(state$, () => states.RENAME)
+  const initRename$ = fromEventSelector(el, 'button[data-rename]', 'click').pipe(
+    next(state$, () => states.RENAME),
+    tap(() => window.requestAnimationFrame(() => el.querySelector('input[data-rename]').focus()))
   )
-  subscribe(rename$)
+  subscribe(initRename$)
 
-  const saveRename$ = fromEventSelector(el, 'form[data-rename]', 'submit').pipe(
-    tap((event) => event.preventDefault()),
-    next(state$, () => states.FAVORITE)
+  const renameInputKeydown$ = fromEventSelector(el, 'input[data-rename]', 'keydown').pipe(
+    map(({ key }) => key),
+    shareReplay(1)
   )
-  subscribe(saveRename$)
-
-  const escapeToCancelRename$ = fromEventSelector(el, 'form[data-rename] input', 'keydown').pipe(
-    filter(({ key }) => key === 'Escape'),
-    next(state$, () => states.FAVORITE)
+  const renameInputEscape$ = renameInputKeydown$.pipe(
+    filter((key) => key === 'Escape')
   )
-  subscribe(escapeToCancelRename$)
-
-  const cancelRename$ = fromEventSelector(el, 'button[data-cancel-rename]', 'click').pipe(
-    next(state$, () => states.FAVORITE)
+  const renameInputEnter$ = renameInputKeydown$.pipe(
+    filter((key) => key === 'Enter')
   )
-  subscribe(cancelRename$)
+  const renameInputBlur$ = fromEventSelector(el, 'input[data-rename]', 'blur')
+  const submitRename$ = merge(
+    renameInputEnter$,
+    //renameInputBlur$
+  ).pipe(
+    map(() => el.querySelector('input[data-rename]').value.trim()),
+    withLatestFrom(favorites$, formula$),
+    map(([ label, favorites, formula ]) =>
+      favorites
+        .map((favorite) =>
+          favorite.formula === formula
+            ? { label: label ? label : formula, formula }
+            : favorite
+        )
+    ),
+    withLatestFrom(setFavorites$),
+    tap(([ value, set ]) => set(value))
+  )
+  const finishRename$ = merge(
+    renameInputEscape$,
+    submitRename$
+  ).pipe(
+    next(state$, () => states.FAVORITE),
+    tap(() => window.requestAnimationFrame(() => el.querySelector('button[data-rename]').focus()))
+  )
+  subscribe(finishRename$)
 
   const home$ = fromEventSelector(el, 'button[data-home]', 'click').pipe(
     mapTo(''),
@@ -136,11 +142,8 @@ define('dice-header', (el) => {
   subscribe(toggleFavorite$)
 
   const render$ = combineLatestObject({
-    hasFormula: hasFormula$,
-    heading: heading$,
-    isFavorite: isFavorite$,
-    label: favoriteLabel$,
     formula: formula$,
+    label: favoriteLabel$,
     state: state$
   }).pipe(
     renderComponent(el, render)
@@ -177,7 +180,11 @@ function renderFavoriteState (props) {
   return html`
     ${renderHomeButton()}
     <h1 class='heading'>
-      <button data-rename>${label}</button>
+      <button
+        class='rename-button'
+        data-rename>
+        ${label}
+      </button>
     </h1>
     ${renderFavoriteButton({ pressed: true })}
   `
@@ -186,21 +193,12 @@ function renderFavoriteState (props) {
 function renderRenameState (props) {
   const { label } = props
   return html`
-    <form data-rename>
-      <input
-        aria-label='Name'
-        data-rename
-        type='text'
-        value=${label} />
-      <button type='submit'>
-        Save
-      </button>
-      <button
-        data-cancel-rename
-        type='button'>
-        Cancel
-      </button>
-    </form>
+    <input
+      aria-label='Name'
+      class='rename-input'
+      data-rename
+      type='text'
+      value=${label} />
   `
 }
 

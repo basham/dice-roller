@@ -2,13 +2,59 @@ dice-header {
   align-items: center;
   background-color: var(--color-black-09);
   display: flex;
+  font-size: calc(20rem/16);
+  font-weight: bold;
   justify-content: space-between;
+  line-height: 1;
   padding: 0.5rem;
+  text-align: center;
 }
 
 dice-header .heading {
-  font-size: calc(20rem/16);
-  line-height: 1;
+  font-size: inherit;
   margin: 0;
-  text-align: center;
+}
+
+dice-header .rename-button {
+  background: none;
+  border-color: var(--color-black-05);
+  border-style: solid;
+  border-width: 0 0 calc(2rem/16);
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  height: 2rem;
+  line-height: inherit;
+  padding: calc(2rem/16) 0 0;
+}
+
+dice-header .rename-button:focus,
+dice-header .rename-button:hover {
+  border-color: var(--color-black-01);
+}
+
+dice-header .rename-button:focus {
+  outline: none;
+}
+
+dice-header .rename-button:active {
+  color: var(--color-black-03);
+}
+
+dice-header .rename-input {
+  background-color: var(--color-black-08);
+  border: calc(2rem/16) solid var(--color-black-01);
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  height: 2.5rem;
+  line-height: inherit;
+  margin: 0.25rem;
+  padding: 0;
+  text-align: inherit;
+  width: 100%;
+}
+
+dice-header .rename-input:focus {
+  outline: none;
 }

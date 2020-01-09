@@ -97,13 +97,17 @@ Color variations: https://codepen.io/basham/pen/OpNybO
   --color-yellow-10: var(--color-black);
 }
 
+* {
+  box-sizing: border-box;
+}
+
 html {
   background-color: var(--color-black-08);
   color: var(--color-black-01);
 }
 
 body {
-  font-family: system, sans-serif;
+  font-family: system-ui, system, sans-serif;
   font-size: 100%;
   margin: 0;
   overscroll-behavior: none;
