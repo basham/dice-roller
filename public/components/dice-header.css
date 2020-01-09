@@ -41,6 +41,11 @@ dice-header .rename-button:active {
   color: var(--color-black-03);
 }
 
+dice-header .rename-form {
+  padding: 0.25rem;
+  width: 100%;
+}
+
 dice-header .rename-input {
   background-color: var(--color-black-08);
   border: calc(2rem/16) solid var(--color-black-01);
@@ -49,7 +54,6 @@ dice-header .rename-input {
   font-weight: inherit;
   height: 2.5rem;
   line-height: inherit;
-  margin: 0.25rem;
   padding: 0 0 calc(2rem/16) 0;
   text-align: inherit;
   width: 100%;

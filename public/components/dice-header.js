@@ -195,12 +195,16 @@ function renderFavoriteState (props) {
 function renderRenameState (props) {
   const { label } = props
   return html`
-    <input
-      aria-label='Name'
-      class='rename-input'
-      data-rename
-      type='text'
-      value=${label} />
+    <form
+      action='#'
+      class='rename-form'>
+      <input
+        aria-label='Name'
+        class='rename-input'
+        data-rename
+        type='text'
+        value=${label} />
+    </form>
   `
 }
 
