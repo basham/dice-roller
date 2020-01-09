@@ -50,7 +50,7 @@ dice-header .rename-input {
   height: 2.5rem;
   line-height: inherit;
   margin: 0.25rem;
-  padding: 0;
+  padding: 0 0 calc(2rem/16) 0;
   text-align: inherit;
   width: 100%;
 }
