@@ -102,6 +102,12 @@ define('dice-header', (el) => {
   )
   subscribe(saveRename$)
 
+  const escapeToCancelRename$ = fromEventSelector(el, 'form[data-rename] input', 'keydown').pipe(
+    filter(({ key }) => key === 'Escape'),
+    next(state$, () => states.FAVORITE)
+  )
+  subscribe(escapeToCancelRename$)
+
   const cancelRename$ = fromEventSelector(el, 'button[data-cancel-rename]', 'click').pipe(
     next(state$, () => states.FAVORITE)
   )
@@ -183,7 +189,7 @@ function renderRenameState (props) {
     <form data-rename>
       <input
         aria-label='Name'
-        autofocus
+        data-rename
         type='text'
         value=${label} />
       <button type='submit'>
