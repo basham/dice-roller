@@ -207,6 +207,7 @@ function renderRenameState (props) {
       class='rename-form'>
       <input
         aria-label='Name'
+        autofocus
         class='rename-input'
         data-rename
         type='text'
