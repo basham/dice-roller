@@ -150,10 +150,16 @@ define('dice-header', (el) => {
   )
   subscribe(toggleFavorite$)
 
+  const keys = {
+    home: {},
+    favorite: {}
+  }
+
   const render$ = combineLatestObject({
     formula: formula$,
     label: favoriteLabel$,
-    state: state$
+    state: state$,
+    keys
   }).pipe(
     renderComponent(el, render)
   )
@@ -167,27 +173,28 @@ function render (props) {
   return renderMap[state](props)
 }
 
-function renderIdleState () {
+function renderIdleState (props) {
+  const { keys } = props
   return html`
-    ${renderHomeButton({ hidden: true })}
+    ${renderHomeButton({ hidden: true, key: keys.home })}
     ${renderHeading({ label: APP_NAME })}
-    ${renderFavoriteButton({ hidden: true })}
+    ${renderFavoriteButton({ hidden: true, key: keys.favorite })}
   `
 }
 
 function renderNotFavoriteState (props) {
-  const { formula } = props
+  const { formula, keys } = props
   return html`
-    ${renderHomeButton()}
+    ${renderHomeButton({ key: keys.home })}
     ${renderHeading({ label: formula })}
-    ${renderFavoriteButton()}
+    ${renderFavoriteButton({ key: keys.favorite })}
   `
 }
 
 function renderFavoriteState (props) {
-  const { label } = props
+  const { keys, label } = props
   return html`
-    ${renderHomeButton()}
+    ${renderHomeButton({ key: keys.home })}
     <h1 class='heading'>
       <button
         class='rename-button'
@@ -195,7 +202,7 @@ function renderFavoriteState (props) {
         ${label}
       </button>
     </h1>
-    ${renderFavoriteButton({ pressed: true })}
+    ${renderFavoriteButton({ key: keys.favorite, pressed: true })}
   `
 }
 
@@ -217,8 +224,8 @@ function renderRenameState (props) {
 }
 
 function renderHomeButton (props = {}) {
-  const { hidden = false } = props
-  return html`
+  const { hidden = false, key } = props
+  return html.for(key)`
     <button
       aria-label='Home'
       class='icon-button'
@@ -239,8 +246,8 @@ function renderHeading (props) {
 }
 
 function renderFavoriteButton (props = {}) {
-  const { hidden = false, pressed = false } = props
-  return html`
+  const { hidden = false, key, pressed = false } = props
+  return html.for(key)`
     <button
       aria-label='Favorite'
       aria-pressed=${pressed}
