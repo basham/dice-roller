@@ -76,13 +76,15 @@ define('dice-header', (el) => {
   )
   subscribe(favoriteLabel$)
 
-  const initRename$ = fromEventSelector(el, 'button[data-rename]', 'touchend').pipe(
+  const renameClick$ = fromEventSelector(el, 'button[data-rename]', 'click')
+  const renameTouch$ = fromEventSelector(el, 'button[data-rename]', 'touchend')
+  const initRename$ = merge(
+    renameClick$,
+    renameTouch$
+  ).pipe(
     next(state$, () => states.RENAME),
     tap(() => window.requestAnimationFrame(() => {
-      const input = el.querySelector('input[data-rename]')
-      input.focus()
-      //input.click() // Open iOS keyboard
-      //window.requestAnimationFrame(() => input.focus())
+      el.querySelector('input[data-rename]').focus()
     }))
   )
   subscribe(initRename$)
@@ -205,7 +207,6 @@ function renderRenameState (props) {
       class='rename-form'>
       <input
         aria-label='Name'
-        autofocus
         class='rename-input'
         data-rename
         type='text'
