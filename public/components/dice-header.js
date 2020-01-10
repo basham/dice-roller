@@ -1,5 +1,5 @@
 import { BehaviorSubject, combineLatest, merge } from 'rxjs'
-import { distinctUntilChanged, filter, map, mapTo, shareReplay, tap, withLatestFrom, startWith } from 'rxjs/operators'
+import { filter, map, mapTo, shareReplay, tap, withLatestFrom, startWith } from 'rxjs/operators'
 import { adoptStyles, define, html, renderComponent } from '../util/dom.js'
 import { combineLatestObject, debug, fromEventSelector, next, useSubscribe } from '../util/rx.js'
 import { APP_NAME } from '../constants.js'
@@ -33,10 +33,6 @@ define('dice-header', (el) => {
 
   const formula$ = store.get('formula$')
   const setFormula$ = store.get('setFormula')
-  const hasFormula$ = formula$.pipe(
-    map((formula) => formula !== ''),
-    distinctUntilChanged()
-  )
 
   const favorite$ = combineLatest(
     favorites$,
