@@ -80,7 +80,7 @@ define('dice-header', (el) => {
   const renameTouch$ = fromEventSelector(el, 'button[data-rename]', 'touchend')
   const initRename$ = merge(
     renameClick$,
-    renameTouch$
+    //renameTouch$
   ).pipe(
     next(state$, () => states.RENAME),
     tap(() => window.requestAnimationFrame(() => {
