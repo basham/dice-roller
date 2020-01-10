@@ -9,7 +9,7 @@
     "postbuild": "cp ./node_modules/es-module-shims/dist/es-module-shims.min.js ./public/web_modules/es-module-shims.min.js",
     "postinstall": "npm run build",
     "start": "npm run server & npm run watch",
-    "server": "es-dev-server --open --watch --root-dir ./public/",
+    "server": "es-dev-server --open --watch --app-index ./index.html --root-dir ./public/",
     "watch": "nodemon --watch ./public --ext js,css,html,svg --ignore service-worker.js --exec \"npm run workbox\"",
     "workbox": "node ./scripts/workbox.js"
   },
@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@pika/web": "0.6.1",
-    "es-dev-server": "1.36.1",
+    "es-dev-server": "1.23.1",
     "nodemon": "2.0.2",
     "now": "16.7.3",
     "workbox-build": "4.3.1"
