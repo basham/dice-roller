@@ -76,7 +76,7 @@ define('dice-header', (el) => {
   )
   subscribe(favoriteLabel$)
 
-  const initRename$ = fromEventSelector(el, 'button[data-rename]', 'click').pipe(
+  const initRename$ = fromEventSelector(el, 'button[data-rename]', 'touch').pipe(
     next(state$, () => states.RENAME),
     tap(() => window.requestAnimationFrame(() => {
       const input = el.querySelector('input[data-rename]')
