@@ -24,7 +24,7 @@ export function keychain () {
 }
 
 export const renderComponent = renderComponentFactory(
-  ({ element, props, renderer }) => render(element, () => renderer(props))
+  ({ element, props, renderer }) => render(element, renderer(props))
 )
 
 let _id = 0
