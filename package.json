@@ -24,17 +24,17 @@
   },
   "homepage": "https://github.com/basham/dice-roller#readme",
   "dependencies": {
-    "construct-style-sheets-polyfill": "2.3.0",
+    "construct-style-sheets-polyfill": "2.3.3",
     "es-module-shims": "0.4.6",
-    "lighterhtml": "1.4.1",
-    "rxjs": "6.5.3",
+    "lighterhtml": "2.0.9",
+    "rxjs": "6.5.4",
     "when-elements": "0.2.1"
   },
   "devDependencies": {
     "@pika/web": "0.6.1",
-    "es-dev-server": "1.23.1",
-    "nodemon": "1.19.4",
-    "now": "16.4.4",
+    "es-dev-server": "1.36.1",
+    "nodemon": "2.0.2",
+    "now": "16.7.3",
     "workbox-build": "4.3.1"
   },
   "@pika/web": {
