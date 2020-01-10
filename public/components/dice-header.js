@@ -76,12 +76,13 @@ define('dice-header', (el) => {
   )
   subscribe(favoriteLabel$)
 
-  const initRename$ = fromEventSelector(el, 'button[data-rename]', 'click').pipe(
+  const initRename$ = fromEventSelector(el, 'button[data-rename]', 'touchend').pipe(
     next(state$, () => states.RENAME),
     tap(() => window.requestAnimationFrame(() => {
       const input = el.querySelector('input[data-rename]')
-      input.click() // Open iOS keyboard
-      window.requestAnimationFrame(() => input.focus())
+      input.focus()
+      //input.click() // Open iOS keyboard
+      //window.requestAnimationFrame(() => input.focus())
     }))
   )
   subscribe(initRename$)
